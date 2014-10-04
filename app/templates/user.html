@@ -1,0 +1,41 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+
+<div class="ui grid">
+    <div class="ui three wide column">
+        <div class="ui segment">
+            <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
+        </div>
+    </div>
+    <div class="ui ten wide column">
+        {% if not current_user.confirmed and current_user.name == user.name %}
+        <div class="ui segment">
+            <h1>
+                Hello, {{ current_user.name }}!
+            </h1>
+            <h3>You have not confirmed your account yet.</h3>
+            <p>
+                Before you can access this site you need to confirm your account.
+                Check your inbox, you should have received an email with a confirmation link.
+            </p>
+            <p>
+                Need another confirmation email?
+                <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+            </p>
+        </div>
+        {% endif %}
+        <div class="ui segment">
+        <p>{{ user.name }}</p>
+        <p>last seen at {{ user.last_seen_time }}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block css %}
+{% endblock %}

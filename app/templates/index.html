@@ -1,0 +1,44 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+
+<div class="ui grid">
+    <div class="ui three wide column">
+        <div class="ui segment">
+            <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
+        </div>
+    </div>
+    <div class="ui ten wide column">
+        {{ show_flash() }}
+        {% for row in content %}
+        <div class="ui stacked segment">
+            <div class="ui red ribbon label">{{ row.Post.post_time }}</div>
+                by <a href="{{url_for('main.user', name = row.User.name)}}">{{ row.User.name }}</a> |
+                {{ row.Post.view_count }} <i class="unhide icon"></i> |
+                {{ row.Post.comment_count }} <i class="comment outline icon"></i>
+            <div class="ui top right green attached label">
+                <a href="{{url_for('main.post', title = row.Post.title)}}">read more</a>
+            </div>
+            <div class="BT-post"><div>{{ row.Post.body|safe }}</div></div>
+        </div>
+        {% else %}
+        <div class="ui stacked segment">
+            No post exists!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
+<script type="text/javascript">
+    //monokai_sublime tomorrow pojoaque
+    hljs.initHighlightingOnLoad();
+</script>
+{% endblock %}
+
+{% block css %}
+{% endblock %}

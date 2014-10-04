@@ -1,0 +1,22 @@
+{% extends "layout_main.html" %}
+{% block body %}
+<div class="ui three column grid">
+    <div class="column"></div>
+        <div class=" column">
+            <h1>
+                Hello, {{ current_user.name }}!
+            </h1>
+            <h3>You have not confirmed your account yet.</h3>
+            <p>
+                Before you can access this site you need to confirm your account.
+                Check your inbox, you should have received an email with a confirmation link.
+            </p>
+            <p>
+                Need another confirmation email?
+                <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+            </p>
+        </div>
+    </div>
+    <div class="column"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% import "/wtf.html" as wtf %}
+<!doctype html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>BEAR.TODAY</title>
+<script type=text/javascript src="{{ url_for('static', filename='jquery/jquery-2.1.1.min.js')}}"></script>
+<script type=text/javascript src="{{ url_for('static', filename='semantic/packaged/javascript/semantic.min.js')}}"></script>
+<link rel=stylesheet type=text/css class="ui" href="{{ url_for('static', filename='semantic/packaged/css/semantic.min.css') }}">                                                                  
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'beartoday/beartoday.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Converter.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Sanitizer.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'ace-builds-master/src-noconflict/ace.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'jcubic-jquery.splitter/css/jquery.splitter.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'jcubic-jquery.splitter/js/jquery.splitter-0.14.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'markdown_interface/markdown_interface.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'FileSaver/FileSaver.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
+
+{% block source %}
+{% endblock %}
+</head>
+<body id="example">
+{% block body %}
+{% endblock %}
+
+</body>
+<script>
+$('.ui.dropdown').dropdown();
+</script>
+
+{% block script %}
+{% endblock %}
+{% block css %}
+{% endblock %}
+</html>
