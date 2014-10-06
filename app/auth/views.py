@@ -64,12 +64,14 @@ def register():
                     password=form.password.data,
                     registration_time = datetime.utcnow(),
                     last_seen_time = datetime.utcnow())
+        user.confirmed = True;
         db.session.add(user)
         db.session.commit()
-        token = user.generate_confirmation_token()
-        send_email(user.email, 'Confirm Your Account',
-                   'auth/email/confirm', user=user, token=token)
-        flash('A confirmation email has been sent to you by email.')
+        #token = user.generate_confirmation_token()
+        #send_email(user.email, 'Confirm Your Account',
+        #           'auth/email/confirm', user=user, token=token)
+        #flash('A confirmation email has been sent to you by email.')
+        flash('log in please!')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 

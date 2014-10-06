@@ -54,7 +54,7 @@ class User(UserMixin, db.Model): #(User - Role) many to one  (User - Device) man
     name = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    confirmed = db.Column(db.Boolean, default=False)
+    confirmed = db.Column(db.Boolean, default=True)
     
     telephone = db.Column(db.String(20))
     address = db.Column(db.String(200))
