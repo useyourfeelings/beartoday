@@ -215,7 +215,7 @@ def blog(name):
     content = []
 
     try:
-        content = db.session.query(Post, User).filter(Post.author_id == User.id).filter(User.name == name).filter(Post.is_comment == False).order_by(Post.post_time.desc()).all()
+        content = db.session.query(Post, User).filter(Post.author_id == User.id).filter(User.name == name).filter(Post.is_comment == False).filter(Post.owner_blog == Post.author_id).order_by(Post.post_time.desc()).all()
         
         return render_template("blog.html", content = content)
         
@@ -254,7 +254,8 @@ def savepost():
     post = Post(title = title, body = body, author_id = current_user.get_id(),\
         post_time = datetime.utcnow(), last_editing_time = datetime.utcnow(), parent_post_id = parent_post_id,\
         ancestor_post_id = ancestor_post_id, is_comment = is_comment, view_count = view_count, \
-        comment_count = comment_count, like_count = like_count, dislike_count = dislike_count, owner_bbs = owner_bbs)
+        comment_count = comment_count, like_count = like_count, dislike_count = dislike_count, \
+        owner_blog = owner_blog, owner_bbs = owner_bbs)
     #print(post.post_time)
     try:
         db.session.add(post)

@@ -186,16 +186,16 @@ class Post(db.Model): #(Post - User) many to one     (Post - Tag) many to many
     like_count = Column(Integer(), nullable=False, server_default="0")
     dislike_count = Column(Integer(), nullable=False, server_default="0")
     
-    owner_bbs = Column(Integer(), nullable=False, server_default="1")
+    owner_bbs = Column(Integer(), nullable=False, server_default="0")
+    owner_blog = Column(Integer(), nullable=False, server_default="0")
     
-    tags = relationship('Tag', secondary = post_tag_table, backref='posts')#, lazy='dynamic')
-    #tags = relationship('PostTag', backref='posts', lazy='dynamic')
+    tags = relationship('Tag', secondary = post_tag_table, backref='posts')
     
     child_posts = None
     
     def __init__(self, title="", body="", author_id = 1, parent_post_id = 0, ancestor_post_id = 0,\
         is_comment = False, view_count = 0, comment_count = 0, like_count = 0, dislike_count = 0,\
-            post_time = datetime.utcnow(), last_editing_time = datetime.utcnow(), owner_bbs = 1):
+            post_time = datetime.utcnow(), last_editing_time = datetime.utcnow(), owner_bbs = 0, owner_blog = 0):
         self.title = title
         self.body = body
         self.post_time = post_time
@@ -209,6 +209,7 @@ class Post(db.Model): #(Post - User) many to one     (Post - Tag) many to many
         self.like_count = like_count
         self.dislike_count = dislike_count
         self.owner_bbs = owner_bbs
+        self.owner_blog = owner_blog
     
     def __repr__(self):
         return '<Post id %d>' % (self.id)
@@ -233,9 +234,11 @@ class PlatformSetting(db.Model):
     main_blog = Column(Integer(), nullable=False, server_default="0") # user id
     show_blog_link = db.Column(db.Boolean, default=True)
     
-    def __init__(self, window_title="BEAR.TODAY 0.1", page_title="BEAR.TODAY 0.1"):
+    def __init__(self, window_title="BEAR.TODAY", page_title="BEAR.TODAY", main_blog = 1, show_blog_link = True):
         self.window_title = window_title
         self.page_title = page_title
+        self.main_blog = main_blog
+        self.show_blog_link = show_blog_link
         
     @staticmethod
     def create_default_setting():

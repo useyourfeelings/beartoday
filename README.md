@@ -11,10 +11,11 @@ Beartoday is a blog/bbs system powered by [**flask**](http://http://flask.pocoo.
 
         python3 manage.py shell
         from app import db
-        from app.models import Role, BBS
+        from app.models import Role, BBS, PlatformSetting
         db.create_all()
         Role.create_roles()
         BBS.create_root_bbs()
+        PlatformSetting.create_default_setting()
         
         python3 manage.py runserver
 
