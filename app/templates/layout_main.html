@@ -18,7 +18,7 @@
 <!DOCTYPE html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>BEAR.TODAY</title>
+<title>{{ g.platform_setting.window_title }}</title>
 <script type=text/javascript src="{{ url_for('static', filename='jquery/jquery-2.1.1.min.js')}}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='semantic/packaged/javascript/semantic.min.js')}}"></script>
 <link rel=stylesheet type=text/css class="ui" href="{{ url_for('static', filename='semantic/packaged/css/semantic.min.css') }}">                                                                  
@@ -30,21 +30,25 @@
 </head>
 <body id="example">
     <div class="ui fixed  transparent main inverted menu">
-        <a class="item"  href = "{{ url_for('main.index') }}">
-            <i class=" green home icon"></i>BEAR.TODAY 0.1
+        <a class="item"  href = "{{ url_for('main.dash') }}">
+            <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
         </a>
-        <a class="item"  href = "{{ url_for('main.post', title='about') }}">
-            <i class="teal book icon"></i>关于
+        <a class="item"  href = "{{ url_for('main.mainbbs') }}">
+            <i class="chat outline icon"></i>BBS
         </a>
+        {% if g.platform_setting.show_blog_link %}
+        <a class="item"  href = "{{ url_for('main.mainblog') }}">
+            <i class=" blue browser icon"></i>BLOG
+        </a>
+        {% endif %}
         <div class="ui dropdown item">
             <i class="red dashboard icon"></i>
-            功能<i class="dropdown icon"></i>
+            FUNCTION<i class="dropdown icon"></i>
             <div class="menu">
-                <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
                 {% if current_user.is_authenticated() %}
                 {% if current_user.is_god() %}
                 <a class="item"><i class="ordered list icon"></i>TODO LIST</a>
-                <a class="item" href="{{ url_for('main.compose') }}"><i class="edit icon"></i>写作</a>
+                <a class="item" href="{{ url_for('main.compose') }}"><i class="edit icon"></i>Write blog</a>
                 {% endif %}
                 {% endif %}
             </div>
@@ -63,18 +67,21 @@
                     <a class="item">中文</a>
                 </div>
             </div>-->
-            <a class="popup icon github item" data-content="View project on Github" href="https://github.com/useyourfeelings/beartoday">
-                <i class="icon github"></i>
+            <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
+                <i class="teal book icon"></i>ABOUT
             </a>
             <div class="ui dropdown item">
                 <i class="user icon"></i>
                 <div class="menu">
                     {% if current_user.is_authenticated() %}
                     <!--<a class="item">设置</a>-->
-                    <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">我的帐号</a>
-                    <a class="item" href = "{{ url_for('auth.logout') }}">退出</a>
+                    {% if current_user.is_god() %}
+                    <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
+                    {% endif %}
+                    <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
+                    <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                     {% else %}
-                    <a class="item" href = "{{ url_for('auth.login') }}">登录</a>
+                    <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
                     {% endif %}
                 </div>
             </div>

@@ -1,0 +1,230 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+<div class="ui grid">
+    <div class="ui three wide column">
+        <table class="ui purple celled table segment">
+            <thead>
+                <tr>
+                    <th>
+                        SUB BBS
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a href="{{url_for('main.bbs', name = parent_bbs.name)}}"><i class="level up icon"></i></a>
+                    </td>
+                </tr>
+                {% for bbs in children_bbs %}
+                <tr>
+                    <td>
+                        <i class="browser icon"></i><a href="{{url_for('main.bbs', name = bbs.name)}}">{{ bbs.name }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="ui ten wide column">
+        {{ show_flash() }}
+        
+        <div id="bbsposts"></div>
+    </div>
+    <div class="ui three wide column">
+    </div>
+</div>
+
+<div class="ui very wide right sidebar" id="commentmodal">
+    <div class="ui fixed transparent main inverted menu">
+        <div class="ui item">
+            <div class="ui left small icon input">
+                <input type="text" placeholder="title" id="title">
+                <i class="edit icon"></i>
+            </div>
+        </div>
+        <div class="ui icon item">
+            <div class="ui tiny dropdown button">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <div class="item" id="undo"><i class="undo icon"></i>undo</div>
+                    <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
+                    <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
+                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
+                    <div class="ui tiny button"><i class="align left icon"></i></div>
+                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
+                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
+                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
+                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
+
+                    <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
+                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
+                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
+
+                    <div class="item" id="exporthtml">export as HTML</div>
+                    <div class="item" id="exportmd">export as MD</div>
+                </div>
+            </div>
+            <div class="ui tiny positive button" id="submit">publish</div>
+            <div class="ui tiny red button"  id="close">close</div>
+        </div>
+    </div>
+    <div>
+        <div id = "markdown_main">
+            <div id="markdown_editor">USE YOUR FEELINGS
+            </div>
+            <div id = "markdown_preview">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Converter.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Sanitizer.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'ace-builds-master/src-noconflict/ace.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'jcubic-jquery.splitter/css/jquery.splitter.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'jcubic-jquery.splitter/js/jquery.splitter-0.14.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'markdown_interface/markdown_interface.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'FileSaver/FileSaver.js') }}"></script>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
+
+<style type="text/css" media="screen">
+    #markdown_editor { 
+        position: absolute;
+        top: 0px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow-y:hidden;
+    }
+    #markdown_main { 
+        position: absolute;
+        top: 42px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height:100% - 42px;
+        overflow: hidden;
+    }
+</style>
+<script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
+<script type="text/javascript">
+    //monokai_sublime tomorrow pojoaque
+    
+    var can_reply = {{ can_reply }};
+    var bbs_id = {{ bbs.id }}
+    /*
+    var post_id = {{ post_id }};
+    var parent_post_id = {{ parent_post_id }};
+    var ancestor_post_id = {{ ancestor_post_id }};
+    */
+    $('#markdown_main').split({orientation:'horizontal', limit:220, onDragEnd:onSplitterDargEnd});
+    $('#help').popup();
+    
+    function savepostover(data, status)
+    {
+        if(status == 'success' && data == "OK")
+        {
+            alert("succeeded");
+            $('#commentmodal').sidebar('toggle');
+            updateposts();
+        }
+        else
+        {
+            alert("failed");
+        }
+    }
+
+    $('#submit').bind('click', function(){
+        if($("#title").val() == ""){
+            alert("title is needed");
+            return;
+        }
+        $.post("/savepost", {title:$("#title").val(), owner_bbs:bbs_id, owner_blog:0, body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
+    });
+
+    $('#close').bind('click', function(){
+        $('#commentmodal').sidebar('toggle');
+    });
+    
+    function buildposts(posts){  // create all tr
+        var html = '';
+        if(!posts || posts.length == 0)
+            return '';
+        var i;
+        for(i = 0; i < posts.length; ++ i){
+            html +='\
+                <tr><td><br>\
+                    <a class="posttitle" href="/post/i/' + posts[i].post.id + '">' + posts[i].post.title + '</a><br><br>\
+                    by <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> | '
+                    + posts[i].post.post_time + ' | '
+                    + posts[i].post.like_count + ' <a class="like"><i class="thumbs up outline icon"></i></a> | '
+                    + posts[i].post.dislike_count + ' <a class="dislike"><i class="thumbs down outline icon"></i></a> | '
+                    + posts[i].post.view_count + ' <i class="unhide icon"></i> | '
+                    + posts[i].post.comment_count + ' <i class="comment outline icon"></i>\
+                </td></tr>';
+        }
+        
+        return html;
+    }
+    
+    function getbbspostsover(data, status){
+        if(status == "success"){
+            var posts = JSON.parse(data);
+            
+            var poststring = '\
+                <table class="ui celled purple table segment posts">\
+                    <thead>\
+                        <tr>\
+                            <th>\
+                                <div class="ui small red button" id="createpost">NEW TOPIC</div>\
+                                <div class="ui small green button" id="refresh">REFRESH</div>\
+                            </th>\
+                        </tr>\
+                    </thead>\
+                    <tbody>';
+                    
+            poststring += buildposts(posts);
+                        
+            poststring += '</tbody></table>';
+            
+            //alert(poststring);
+            
+            $("#bbsposts").html(poststring);
+            
+            $("#createpost").click(function(){
+                if(!can_reply){
+                    alert("register and confirm your account first");
+                    return;
+                }
+                $('#commentmodal').sidebar('toggle');
+            });
+            
+            $("#refresh").click(function(){
+                updateposts();
+            });
+        }
+        else{
+            alert("ERROR!");
+        }
+    }
+    
+    $("#commentmodal").sidebar({overlay: true});
+    
+    function updateposts(){
+        $.post("/getbbsposts", {bbs_id:{{ bbs.id }}}, getbbspostsover);
+    }
+    
+    updateposts();
+    
+</script>
+{% endblock %}
+
+{% block css %}
+{% endblock %}

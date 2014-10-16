@@ -45,10 +45,10 @@ h3::selection {
 
 body#example {
   font-family: "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif/*rtl:prepend:"Droid Arabic Kufi","Droid Sans", */;
-  background: #f3f3aa ;*url(../semantic/examples/images/bg.jpg) repeat;
+  background: #f0f0c2 ;*url(../semantic/examples/images/bg.jpg) repeat;
   margin: 0px;
   padding: 0px;
-  color: #101010;
+  color: #91010;
   min-width: 320px;
   text-shadow: 1px 1px 1px #5f5f5f;
 }
@@ -157,6 +157,34 @@ a.dislike {
 a.dislike:hover {
   color: #BA0000;
 }
+
+.ui.table{
+    font-size:14px;
+}
+
+.ui.table.posts{
+    color:#777777;
+}
+
+.ui.table tbody tr{
+    padding:20px 0px 0px 4px;
+   * background-color:#888888;
+}
+
+
+a.posttitle {
+    font-weight:bold;
+    color: #444444;*#aaaa44;
+    text-decoration: none;
+    font-size:30px;
+    padding:2px 0px 0px 4px;
+}
+
+a.posttitle:hover {
+  color: #00BA00;
+}
+
+/* ************** */
 
 #example #menu .item {
   -webkit-border-radius: 0px;

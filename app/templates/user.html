@@ -4,9 +4,6 @@
 
 <div class="ui grid">
     <div class="ui three wide column">
-        <div class="ui segment">
-            <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
-        </div>
     </div>
     <div class="ui ten wide column">
         {% if not current_user.confirmed and current_user.name == user.name %}
@@ -26,7 +23,7 @@
         </div>
         {% endif %}
         <div class="ui segment">
-        <p>{{ user.name }}</p>
+        <a href="{{ url_for('main.blog', name = user.name) }}">{{ user.name }}'s BLOG</a>
         <p>last seen at {{ user.last_seen_time }}</p>
         </div>
     </div>

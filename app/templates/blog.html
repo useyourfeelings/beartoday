@@ -4,9 +4,6 @@
 
 <div class="ui grid">
     <div class="ui three wide column">
-        <div class="ui segment">
-            <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
-        </div>
     </div>
     <div class="ui ten wide column">
         {{ show_flash() }}
@@ -17,7 +14,7 @@
                 {{ row.Post.view_count }} <i class="unhide icon"></i> |
                 {{ row.Post.comment_count }} <i class="comment outline icon"></i>
             <div class="ui top right green attached label">
-                <a href="{{url_for('main.post', title = row.Post.title)}}">read more</a>
+                <a href="{{url_for('main.post_title', title = row.Post.title)}}">read more</a>
             </div>
             <div class="BT-post"><div>{{ row.Post.body|safe }}</div></div>
         </div>

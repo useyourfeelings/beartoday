@@ -5,24 +5,18 @@
 
 {% block body %}
 <div class="ui fixed transparent main inverted menu">
-    <a class="item"  href = "{{ url_for('main.index') }}">
-        <i class=" green home icon"></i>BEAR.TODAY 0.1
+    <a class="item"  href = "{{ url_for('main.dash') }}">
+        <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
     </a>
-    <!--<a class="item"  href = "{{ url_for('main.about') }}">
-        <i class="teal book icon"></i>关于
-    </a>-->
-    <!--<div class="ui dropdown item">
-        <i class="red dashboard icon"></i>
-        功能<i class="dropdown icon"></i>
-        <div class="menu">
-            {% if current_user.is_authenticated() %}
-            {% if current_user.is_god() %}
-            <a class="item"><i class="ordered list icon"></i>TODO LIST</a>
-            <a class="active item" href = "{{ url_for('main.compose') }}"><i class="edit icon"></i>写作</a>
-            {% endif %}
-            {% endif %}
-        </div>
-    </div>-->
+    
+    <a class="item"  href = "{{ url_for('main.mainbbs') }}">
+        <i class="chat outline icon"></i>BBS
+    </a>
+    {% if g.platform_setting.show_blog_link %}
+    <a class="item"  href = "{{ url_for('main.mainblog') }}">
+        <i class=" blue browser icon"></i>BLOG
+    </a>
+    {% endif %}
     <div class="ui icon item">
         <div class="ui tiny button" id="undo"><i class="undo icon"></i></div>
         <div class="ui tiny button" id="redo"><i class="repeat icon"></i></div>
@@ -52,13 +46,13 @@
     
     <div class="item">
         <div class="ui left small icon input">
-            <input type="text" placeholder="标题(永久链接)" id="title">
+            <input type="text" placeholder="title(permanent link)" id="title">
             <i class="edit icon"></i>
         </div>
     </div>
     <div class="item">
-        <div class="ui tiny positive button" id="submit">发布</div>
-        <div class="ui tiny red button"  id="close">关闭</div>
+        <div class="ui tiny positive button" id="submit">publish</div>
+        <div class="ui tiny red button"  id="close">close</div>
     </div>
     <div class="right menu">
         <!--<div class="ui dropdown item">
@@ -68,55 +62,34 @@
                 <a class="item">中文</a>
             </div>
         </div>-->
-        <a class="popup icon github item" data-content="View project on Github" href="https://github.com/useyourfeelings/beartoday">
-            <i class="icon github"></i>
+        <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
+            <i class="teal book icon"></i>ABOUT
         </a>
         <div class="ui dropdown item">
             <i class="user icon"></i>
             <div class="menu">
                 {% if current_user.is_authenticated() %}
-                <a class="item">设置</a>
-                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">我的帐号</a>
-                <a class="item" href = "{{ url_for('auth.logout') }}">退出</a>
+                {% if current_user.is_god() %}
+                <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
+                {% endif %}
+                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
+                <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                 {% else %}
-                <a class="item" href = "{{ url_for('auth.login') }}">登录</a>
+                <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
     <!--<div class="ui fluid left icon input">
-        <input type="text" placeholder="标题" id="title">
+        <input type="text" placeholder="title" id="title">
         <i class="edit icon"></i>
     </div>-->
 
     <!--<div class="ui horizontal icon divider"><i class="circular comment outline icon"></i></div>-->
 
 <div id = "markdown_main">
-    <div id="markdown_editor">##USE YOUR FEELINGS 0.1
-
------------------------
-
-> ####**HUGE thanks to the following projects:**
-
-* [**`nginx`**](http://nginx.org)
-* [**`uwsgi`**](https://github.com/unbit/uwsgi)
-* [**`flask`**](http://flask.pocoo.org) and it's nice extensions
-* [**`jquery`**](http://jquery.com)
-* [**`semantic-ui`**](http://semantic-ui.com)
-* [**`ace`**](http://ace.c9.io) need a better docucment : (
-* [**`pagedown`**](https://code.google.com/p/pagedown)
-* [**`highlight.js`**](http://highlightjs.org)
-
-> ####**and all projects i missed here : ) and of course, YOU !**
-
-----------------------
-
-* Homepage : [**`BEAR.TODAY`**](http://bear.today)
-* Location : **`Shanghai China`**
-* Email : **`raidercodebear@gmail.com`**
-
-----------------------
+    <div id="markdown_editor">##USE YOUR FEELINGS
     </div>
     <div id = "markdown_preview">
     </div>
@@ -162,12 +135,12 @@
     {
         if(status == 'success' && data == "OK")
         {
-            alert("发布成功");
+            alert("succeeded");
             window.close();
         }
         else
         {
-            alert("发布失败");
+            alert("failed");
         }
     }
 
@@ -177,7 +150,7 @@
             return;
         }
         
-        $.post("savepost", {title:$('#title').val(), body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
+        $.post("savepost", {title:$('#title').val(), owner_bbs:0, owner_blog:{{ current_user.get_id() }}, body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
     });
 
     $('#close').bind('click', function(){

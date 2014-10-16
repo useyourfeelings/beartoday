@@ -1,0 +1,223 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+
+<div class="ui grid">
+    <div class="ui five wide column">
+        <div class="ui top black attached header">BBS TREE</div>
+        <div class="ui attached segment">
+            <ul id="bbstree" class="ztree"></ul>
+        </div>
+    </div>
+    <div class="ui four wide column">
+        <div class="ui segment">
+            {{ wtf.basic_form(form, placeholder = True) }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="static/zTree_v3/js/jquery.ztree.all-3.5.js"></script>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='zTree_v3/css/zTreeStyle/zTreeStyle.css') }}">
+<script>
+var bbstreesetting = {
+    edit: {
+        enable: true,
+        showRemoveBtn: showRemoveBtn,
+        showRenameBtn: showRenameBtn,
+        removeTitle: "remove",
+        renameTitle: "rename",
+        drag: {
+            isMove: false,
+            isCopy: false,
+            //prev: false,
+            //next: false,
+            //inner: true,
+            autoOpenTime: 0
+        }
+    },
+    view: {
+        addHoverDom: addHoverDom,
+        removeHoverDom: removeHoverDom,
+        selectedMulti: false
+    },
+    data: {
+        simpleData: {
+            enable: true,
+            rootPId: 0
+        },
+        keep: {
+            parent:true,
+            leaf:true
+        },
+    },
+    check: {
+        enable: false
+    },
+    callback: {
+        //beforeDrag: beforeDrag,
+        //beforeDrop: beforeDrop,
+        beforeRemove: beforeRemove,
+        beforeRename: beforeRename,
+        //onClick: groupOnClick,
+    }
+};
+
+function beforeRemove(treeId, treeNode) {
+    if(treeNode.id == 1)
+        return false;
+        
+    if(confirm("really want to delete \"" + treeNode.name + "\"?")){
+        var result = ""
+        
+        $.ajaxSetup({
+            async:false
+        });
+        
+        $.post("deletebbs", {id:treeNode.id}, function(data, status){
+            if(status == "success"){
+                var data_parsed = JSON.parse(data);
+                
+                result = data_parsed.result;
+            }
+            else{
+                result = "failed";
+            }
+        });
+        
+        if(result == "OK"){
+            return true;
+        }
+        else{
+            alert(result);
+            return false;
+        }
+    }
+    else{
+        return false;
+    }
+    
+    return false;
+}
+
+function beforeRename(treeId, treeNode, newName, isCancel) {
+    if(isCancel == true)
+        return true;
+    
+    var result = ""
+    
+    $.ajaxSetup({
+        async:false
+    });
+    
+    $.post("renamebbs", {id:treeNode.id, name:newName}, function(data, status){
+        if(status == "success"){
+            var data_parsed = JSON.parse(data);
+            
+            result = data_parsed.result;
+        }
+        else{
+            result = "failed";
+        }
+    });
+    
+    if(result == "OK"){
+        return true;
+    }
+    else if(result == "IntegrityError"){
+        alert("the name already exists (to quit, press ESC.)");
+        return false;
+    }
+    else{
+        alert(result);
+        return false;
+    }
+    
+    return false;
+}
+
+function addHoverDom(treeId, treeNode) {
+
+    var sObj = $("#" + treeNode.tId + "_span");
+    if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+    var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add BBS' onfocus='this.blur();'></span>";
+    sObj.after(addStr);
+    var btn = $("#addBtn_"+treeNode.tId);
+    
+    var name = "";
+    
+    function createbbsover(data, status){
+        if(status == "success"){
+            var data_parsed = JSON.parse(data);
+            
+            if(data_parsed.result == "OK"){
+                var zTree = $.fn.zTree.getZTreeObj("bbstree");
+                newNode = zTree.addNodes(treeNode, {id:data_parsed.id, pId:treeNode.id, name:name});
+            }
+            else{
+                alert(data_parsed.result);
+            }
+        }
+        else{
+            alert("failed");
+        }
+    }
+
+    if (btn) btn.bind("click", function(){
+        var zTree = $.fn.zTree.getZTreeObj("bbstree");
+        
+        name = prompt("enter BBS name");
+        
+        if(name){
+            $.post("createbbs", {name:name, parent_bbs:treeNode.id}, createbbsover);
+        }
+    });
+};
+
+function removeHoverDom(treeId, treeNode) {
+    $("#addBtn_"+treeNode.tId).unbind().remove();
+};
+
+function showRemoveBtn(treeId, treeNode) {
+    if(treeNode.id == 1)
+        return false;
+    
+    return true;
+}
+
+function showRenameBtn(treeId, treeNode) {
+    return true;
+}
+
+function getbbstreeover(data, status)
+{
+    if(status == "success")
+    {
+        var data_parsed = JSON.parse(data);
+                    
+        $.fn.zTree.init($("#bbstree"), bbstreesetting, data_parsed);
+        
+        var treeObj = $.fn.zTree.getZTreeObj("bbstree");
+        treeObj.expandAll(true);
+    }
+    else
+    {
+        alert("something wrong, a refresh is needed.^_^\"");
+    }
+}
+
+$(document).ready(function(){
+    $.post("getbbstree", {}, getbbstreeover);
+    //what if error occured
+});
+</script>
+<style type="text/css">
+.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+</style>
+{% endblock %}
+
+{% block css %}
+{% endblock %}

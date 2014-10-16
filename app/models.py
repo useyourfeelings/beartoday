@@ -47,7 +47,7 @@ class Role(db.Model):   #(Role - User) one to many
     def __repr__(self):
         return '<Role level:%d name:%s default:%d>' % (self.level, self.name, self.default)
 
-class User(UserMixin, db.Model): #(User - Role) many to one  (User - Device) many to many
+class User(UserMixin, db.Model): #(User - Role) many to one  (User - Device) one to many
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -82,7 +82,6 @@ class User(UserMixin, db.Model): #(User - Role) many to one  (User - Device) man
         return self.name
         
     def is_god(self):
-        print('is God %d' % (self.role.name == "God"))
         return self.role.name == "God"
 
     '''def getRoleId(self)
@@ -157,7 +156,20 @@ class User(UserMixin, db.Model): #(User - Role) many to one  (User - Device) man
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-class Post(db.Model): #(Post - User) many to one
+post_tag_table = Table('post_tag_table', db.Model.metadata,
+    Column('postid', Integer, ForeignKey('posts.id')),
+    Column('tagid', Integer, ForeignKey('tags.id'))
+)
+
+'''
+class PostTag(db.Model):
+    __tablename__ = 'post_tag'
+    post_id = Column('postid', Integer, ForeignKey('posts.id')),
+    tag_id = Column('tagid', Integer, ForeignKey('tags.id'))
+)
+'''
+
+class Post(db.Model): #(Post - User) many to one     (Post - Tag) many to many
     __tablename__ = 'posts'
 
     id = Column(Integer, primary_key=True, nullable=False, unique=True)
@@ -174,12 +186,17 @@ class Post(db.Model): #(Post - User) many to one
     like_count = Column(Integer(), nullable=False, server_default="0")
     dislike_count = Column(Integer(), nullable=False, server_default="0")
     
+    owner_bbs = Column(Integer(), nullable=False, server_default="1")
+    
+    tags = relationship('Tag', secondary = post_tag_table, backref='posts')#, lazy='dynamic')
+    #tags = relationship('PostTag', backref='posts', lazy='dynamic')
+    
     child_posts = None
     
     def __init__(self, title="", body="", author_id = 1, parent_post_id = 0, ancestor_post_id = 0,\
         is_comment = False, view_count = 0, comment_count = 0, like_count = 0, dislike_count = 0,\
-            post_time = datetime.utcnow(), last_editing_time = datetime.utcnow()):
-        self.title =title
+            post_time = datetime.utcnow(), last_editing_time = datetime.utcnow(), owner_bbs = 1):
+        self.title = title
         self.body = body
         self.post_time = post_time
         self.last_editing_time = post_time
@@ -191,6 +208,73 @@ class Post(db.Model): #(Post - User) many to one
         self.comment_count = comment_count
         self.like_count = like_count
         self.dislike_count = dislike_count
+        self.owner_bbs = owner_bbs
     
     def __repr__(self):
         return '<Post id %d>' % (self.id)
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    name = db.Column(db.Text, nullable=False)
+    
+    def __init__(self, name = ""):
+        self.name = name
+        
+class PlatformSetting(db.Model):
+    __tablename__ = 'platformsetting'
+
+    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    
+    window_title = db.Column(db.Text, nullable=False)
+    page_title = db.Column(db.Text, nullable=False)
+    mode = Column(Integer(), nullable=False, server_default="0") #0-blog 1-bbs
+    main_blog = Column(Integer(), nullable=False, server_default="0") # user id
+    show_blog_link = db.Column(db.Boolean, default=True)
+    
+    def __init__(self, window_title="BEAR.TODAY 0.1", page_title="BEAR.TODAY 0.1"):
+        self.window_title = window_title
+        self.page_title = page_title
+        
+    @staticmethod
+    def create_default_setting():
+        setting = PlatformSetting()
+        db.session.add(setting)
+        db.session.commit()
+
+class BBS(db.Model):
+    __tablename__ = 'bbs'
+
+    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    name = db.Column(db.String(24), nullable=False, unique=True)
+    thread_count = Column(Integer(), nullable=False, server_default="0")
+    post_count = Column(Integer(), nullable=False, server_default="0")
+    parent_bbs = Column(Integer(), nullable=False, server_default="0")
+    
+    def __init__(self, name, parent_bbs):
+        self.name = name
+        self.parent_bbs = parent_bbs
+        self.thread_count = 0
+        self.post_count = 0
+    
+    @staticmethod
+    def create_root_bbs():
+        bbs = BBS("BEAR.TODAY BBS", 0)
+        db.session.add(bbs)
+        db.session.commit()
+
+'''
+class Link(db.Model):
+    __tablename__ = 'links'
+
+    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    name = db.Column(db.Text, nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    position = Column(Integer(), nullable=False, server_default="0")
+    
+    def __init__(self, name = "", body = "", position = 0):
+        self.name = name
+        self.body = body
+        self.position = position
+'''

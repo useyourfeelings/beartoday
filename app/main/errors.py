@@ -1,9 +1,14 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, g
 from . import main
 
+from .. import db
+from ..models import PlatformSetting
 
 @main.app_errorhandler(403)
 def forbidden(e):
+    setting = db.session.query(PlatformSetting).one()
+    g.platform_setting = setting
+    
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
         response = jsonify({'error': 'forbidden'})
@@ -14,6 +19,9 @@ def forbidden(e):
 
 @main.app_errorhandler(404)
 def page_not_found(e):
+    setting = db.session.query(PlatformSetting).one()
+    g.platform_setting = setting
+    
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
         response = jsonify({'error': 'not found'})
@@ -24,6 +32,9 @@ def page_not_found(e):
 
 @main.app_errorhandler(500)
 def internal_server_error(e):
+    setting = db.session.query(PlatformSetting).one()
+    g.platform_setting = setting
+    
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
         response = jsonify({'error': 'internal server error'})

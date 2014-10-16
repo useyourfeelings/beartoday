@@ -2,21 +2,25 @@
 
 {% block body %}
 <div class="ui fixed  transparent main inverted menu">
-    <a class="item"  href = "{{ url_for('main.index') }}">
-        <i class=" green home icon"></i>BEAR.TODAY 0.1
+    <a class="item"  href = "{{ url_for('main.dash') }}">
+        <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
     </a>
-    <a class="item"  href = "{{ url_for('main.post', title='about') }}">
-        <i class="teal book icon"></i>关于
+    <a class="item"  href = "{{ url_for('main.mainbbs') }}">
+        <i class="chat outline icon"></i>BBS
     </a>
+    {% if g.platform_setting.show_blog_link %}
+    <a class="item"  href = "{{ url_for('main.mainblog') }}">
+        <i class=" blue browser icon"></i>BLOG
+    </a>
+    {% endif %}
     <div class="ui dropdown item">
         <i class="red dashboard icon"></i>
-        功能<i class="dropdown icon"></i>
+        FUNCTION<i class="dropdown icon"></i>
         <div class="menu">
-            <a class="item" href="http://useyourfeelings.com"><i class="pencil icon"></i>在线MARKDOWN编辑器</a>
             {% if current_user.is_authenticated() %}
             {% if current_user.is_god() %}
             <a class="item"><i class="ordered list icon"></i>TODO LIST</a>
-            <a class="active item" href = "{{ url_for('main.compose') }}"><i class="edit icon"></i>写作</a>
+            <a class="active item" href = "{{ url_for('main.compose') }}"><i class="edit icon"></i>Write blog</a>
             {% endif %}
             {% endif %}
         </div>
@@ -35,18 +39,21 @@
                 <a class="item">中文</a>
             </div>
         </div>-->
-        <a class="popup icon github item" data-content="View project on Github" href="https://github.com/useyourfeelings/beartoday">
-            <i class="icon github"></i>
+        <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
+            <i class="teal book icon"></i>ABOUT
         </a>
         <div class="ui dropdown item">
             <i class="user icon"></i>
             <div class="menu">
                 {% if current_user.is_authenticated() %}
                 <!--<a class="item">设置</a>-->
-                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">我的帐号</a>
-                <a class="item" href = "{{ url_for('auth.logout') }}">退出</a>
+                {% if current_user.is_god() %}
+                <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
+                {% endif %}
+                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
+                <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                 {% else %}
-                <a class="item" href = "{{ url_for('auth.login') }}">登录</a>
+                <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
                 {% endif %}
             </div>
         </div>
@@ -82,38 +89,41 @@
 
 <div class="ui very wide right sidebar" id="commentmodal">
     <div class="ui fixed transparent main inverted menu">
+        <div class="ui item">
+            <div class="ui left small icon input">
+                <input type="text" placeholder="title" id="title">
+                <i class="edit icon"></i>
+            </div>
+        </div>
         <div class="ui icon item">
-            <div class="ui tiny button" id="undo"><i class="undo icon"></i></div>
-            <div class="ui tiny button" id="redo"><i class="repeat icon"></i></div>
-            <div class="ui tiny button" id="dobold"><i class="bold icon"></i></div>
-            <!--<div class="ui tiny button"><i class="align center icon"></i></div>
-            <div class="ui tiny button"><i class="align left icon"></i></div>
-            <div class="ui tiny button"><i class="align right icon"></i></div>-->
-            <div class="ui tiny button" id="addurl"><i class="url icon"></i></div>
-            <div class="ui tiny button" id="addimg"><i class="photo icon"></i></div>
-            <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
-
-            <div class="ui tiny button" id="newdoc"><i class="file outline icon"></i></div>
-            <!--<div class="ui tiny button"><i class="save icon"></i></div>
-            <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
             <div class="ui tiny dropdown button">
-                <i class="share icon"></i>
+                <i class="wrench icon"></i>
                 <div class="menu">
+                    <div class="item" id="undo"><i class="undo icon"></i>undo</div>
+                    <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
+                    <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
+                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
+                    <div class="ui tiny button"><i class="align left icon"></i></div>
+                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
+                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
+                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
+                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
+
+                    <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
+                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
+                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
+
                     <div class="item" id="exporthtml">export as HTML</div>
                     <div class="item" id="exportmd">export as MD</div>
                 </div>
             </div>
-            <!--<div class="ui tiny button"><i class="setting icon"></i></div>-->
-            <!--<div class="ui tiny button " id="help" data-content="enjoy :)" data-position="bottom center"><i class="help icon"></i></div>
-            -->
-            <div class="ui tiny positive button" id="submit">发布</div>
-            <div class="ui tiny red button"  id="close">关闭</div>
+            <div class="ui tiny positive button" id="submit">publish</div>
+            <div class="ui tiny red button"  id="close">close</div>
         </div>
     </div>
     <div>
         <div id = "markdown_main">
-            <div id="markdown_editor">WELCOME TO BEAR.TODAY 0.1
------------------------
+            <div id="markdown_editor">USE YOUR FEELINGS
             </div>
             <div id = "markdown_preview">
             </div>
@@ -160,18 +170,18 @@
     {
         if(status == 'success' && data == "OK")
         {
-            alert("发布成功");
+            alert("succeeded");
             $('#commentmodal').sidebar('toggle');
             updatethreaddata();
         }
         else
         {
-            alert("发布失败");
+            alert("failed");
         }
     }
 
     $('#submit').bind('click', function(){
-        $.post("/savepost", {title:'', body:previewHtml, parent_post_id:parent_post_id, ancestor_post_id:ancestor_post_id, is_comment:1}, savepostover);
+        $.post("/savepost", {title:'', body:previewHtml, owner_bbs:0, owner_blog:0, parent_post_id:parent_post_id, ancestor_post_id:ancestor_post_id, is_comment:1}, savepostover);
     });
 
     $('#close').bind('click', function(){
@@ -191,12 +201,12 @@
                     <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> '
                     + posts[i].post.post_time + ' | ' 
                     + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
-                    + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>'
+                    + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
+                    <div class="ui mini circular green inverted button commentbutton" id =' + posts[i].post.id +'>\
+                        reply\
+                    </div>'
                     + posts[i].post.body +
-                    '<div class="ui mini circular green inverted button commentbutton" id =' + posts[i].post.id +'>\
-                        <i class="comment outline icon"></i>reply\
-                    </div>\
-                </div>\
+                '</div>\
                 <div class="comments">';
                 
                 comments += buildComments(posts[i].child_posts);
@@ -217,24 +227,22 @@
                 <div class="ui twelve wide column">\
                     <div class="ui stacked segment">\
                         <div class="ui red ribbon label">' + thread.post.post_time + '</div>\
-                            by <a href="/user/' + thread.author.name + ')">' + thread.author.name + '</a> | '
-                            + thread.post.view_count + '<i class="unhide icon"></i> | '
-                            + thread.post.comment_count + '<i class="comment outline icon"></i> | '
-                            + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
-                            + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
+                                by <a href="/user/' + thread.author.name + ')">' + thread.author.name + '</a> | '
+                                + thread.post.view_count + '<i class="unhide icon"></i> | '
+                                + thread.post.comment_count + '<i class="comment outline icon"></i> | '
+                                + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
+                                + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
+                                <div class="ui mini green circular button commentbutton" id = ' + thread.post.id + '>\
+                                    reply\
+                                </div>\
                             <div class="ui top right green attached label">\
-                                <a href="/post/' + thread.post.title + '">permanent link</a>\
-                            </div>\
+                                <a href="/post/t/' + thread.post.title + '">permanent link</a>\
+                            </div><br><br>\
                             <div class="BT-post"><div>' + thread.post.body + '</div></div>\
                         </div>\
                         <div class="ui horizontal divider">\
                             <i class="smile icon"></i>\
                         </div>\
-                        <div class="ui mini green circular button commentbutton" id = ' + thread.post.id + '>\
-                            <i class="comment outline icon"></i>reply\
-                        </div>\
-                        <br>\
-                        <br>\
                         <div class="ui threaded comments">';
                         
             threadstring += buildComments(thread.child_posts);
