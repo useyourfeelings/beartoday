@@ -1,7 +1,10 @@
 #Hello
 
 Beartoday is a blog/bbs system powered by [**flask**](http://http://flask.pocoo.org/).
-##[DEMO](http://bear.today)
+
+##[DEMO1](http://bbs.airm2m.com)
+
+##[DEMO2](http://bear.today)
 
 #Install
 * install python3
