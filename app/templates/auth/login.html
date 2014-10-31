@@ -2,14 +2,16 @@
 {% block body %}
 <div class="ui three column grid">
     <div class="column"></div>
-        <div class=" column">
-            {{ show_flash() }}
-            {{ wtf.basic_form(form, placeholder = True) }}
-            <a href="{{ url_for('auth.register') }}">REGISTER</a>
-            <br>
-            <br>
-            <!--<a href="{{ url_for('auth.password_reset_request') }}">FORGET PASSWORD?</a>-->
+    <div class="column">
+        {{ show_flash() }}
+        {{ wtf.basic_form(form, placeholder = True, button_map = {'submit':'tiny green'}) }}
+        <!--<div class="ui three wide column grid">-->
+        <div class="ui green segment">
+            <a href="{{ url_for('auth.register') }}"><div class="ui tiny red button">注 册</div></a>
         </div>
+        <br>
+        <br>
+        <!--<a href="{{ url_for('auth.password_reset_request') }}">FORGET PASSWORD?</a>-->
     </div>
     <div class="column"></div>
 </div>

@@ -10,6 +10,8 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
 
 from datetime import datetime
 
+import hashlib
+
 @auth.before_request
 def before_request():
     setting = db.session.query(PlatformSetting).one()
@@ -42,12 +44,19 @@ def login():
     print("xcc login")
     if form.validate_on_submit():
         print("xcc login submit")
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email_or_name.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             user.last_seen_time = datetime.utcnow()
             db.session.commit()
             return redirect(request.args.get('next') or url_for('main.dash'))
+        else:
+            user = User.query.filter_by(name=form.email_or_name.data).first()
+            if user is not None and user.verify_password(form.password.data):
+                login_user(user, form.remember_me.data)
+                user.last_seen_time = datetime.utcnow()
+                db.session.commit()
+                return redirect(request.args.get('next') or url_for('main.dash'))
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
 
@@ -70,6 +79,7 @@ def register():
                     registration_time = datetime.utcnow(),
                     last_seen_time = datetime.utcnow())
         user.confirmed = True;
+        user.avatar_hash = hashlib.md5(form.email.data.encode('utf-8')).hexdigest()
         db.session.add(user)
         db.session.commit()
         #token = user.generate_confirmation_token()

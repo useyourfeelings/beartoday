@@ -6,12 +6,12 @@ from ..models import User
 
 
 class LoginForm(Form):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
-                                             Email()])
+    #email = StringField('Email', validators=[Required(), Length(1, 64),
+    #                                         Email()])
+    email_or_name = StringField('Email or Name', validators=[Required(), Length(1, 64)])
     password = PasswordField('Password', validators=[Required()])
     remember_me = BooleanField('Remember me')
     submit = SubmitField('Log In')
-
 
 class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),

@@ -60,108 +60,49 @@
     </div>
 </div>
 
-<div class="ui grid" id = "thread">
-    <!--<div class="ui ten wide column">
-        <div class="ui stacked segment">
-            <div class="ui red ribbon label"></div>
-                by <a href=""></a> |
-                <i class="unhide icon"></i> |
-                <i class="comment outline icon"></i> |
-                <a class="like"><i class="thumbs up outline icon"></i></a> |
-                <a class="dislike"><i class="thumbs down outline icon"></i></a>
-            <div class="ui top right green attached label">
-                <a href="">permanent link</a>
-            </div>
-            <div class="BT-post"><div></div></div>
-        </div>
-        <div class="ui horizontal divider">
-            <i class="smile icon"></i>
-        </div>
-        <div class="ui mini green circular button commentbutton" >
-            <i class="comment outline icon"></i>reply
-        </div>
-        <br>
-        <br>
-        <div class="ui threaded comments">
-        </div>
-    </div>-->
-</div>
-
-<div class="ui very wide right sidebar" id="commentmodal">
-    <div class="ui fixed transparent main inverted menu">
-        <div class="ui item">
-            <div class="ui left small icon input">
-                <input type="text" placeholder="title" id="title">
-                <i class="edit icon"></i>
-            </div>
-        </div>
-        <div class="ui icon item">
-            <div class="ui tiny dropdown button">
-                <i class="wrench icon"></i>
-                <div class="menu">
-                    <div class="item" id="undo"><i class="undo icon"></i>undo</div>
-                    <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
-                    <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
-                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
-                    <div class="ui tiny button"><i class="align left icon"></i></div>
-                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
-                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
-                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
-                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
-
-                    <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
-                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
-                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
-
-                    <div class="item" id="exporthtml">export as HTML</div>
-                    <div class="item" id="exportmd">export as MD</div>
-                </div>
-            </div>
-            <div class="ui tiny positive button" id="submit">publish</div>
-            <div class="ui tiny red button"  id="close">close</div>
-        </div>
-    </div>
-    <div>
-        <div id = "markdown_main">
-            <div id="markdown_editor">USE YOUR FEELINGS
-            </div>
-            <div id = "markdown_preview">
+<div class="ui grid">
+    {% if g.platform_setting.mode == 1 %}
+    <div class="ui three wide column">
+        <div class="ui tiny top attached header">BBS TREE</div>
+        <div class="bbstree-segment">
+            <div class="ui attached segment">
+                <ul id="bbstree" class="ztree bbstree"></ul>
             </div>
         </div>
     </div>
+    {% endif %}
+    <div class="ui ten wide column">
+        <div id = "thread"></div>
+    </div>
 </div>
+
+{% include "bbs_post_editor.html" %}
+
 {% endblock %}
 
 {% block script %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
 <script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
-<style type="text/css" media="screen">
-    #markdown_editor { 
-        position: absolute;
-        top: 0px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow-y:hidden;
-    }
-    #markdown_main { 
-        position: absolute;
-        top: 42px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height:100% - 42px;
-        overflow: hidden;
-    }
-</style>
-<script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
+{% if g.platform_setting.mode == 1 %}
+<script type="text/javascript" src="{{ url_for('static', filename='zTree_v3/js/jquery.ztree.all-3.5.js') }}"></script>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='zTree_v3/css/zTreeStyle/zTreeStyle.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename = 'beartoday/bbstree.js') }}"></script>
+{% endif %}
+
 <script type="text/javascript">
-    //monokai_sublime tomorrow pojoaque
     
     var can_reply = {{ can_reply }};
     var post_id = {{ post_id }};
     var parent_post_id = {{ parent_post_id }};
     var ancestor_post_id = {{ ancestor_post_id }};
+    var user_is_author = {{ user_is_author }};
+    
+    var MODE_REPLY = "new";
+    var MODE_EDIT = "edit";
+    var editor_mode = MODE_REPLY;
+    
+    var post_title = "";
+    var post_body = "";
     
     $('#markdown_main').split({orientation:'horizontal', limit:220, onDragEnd:onSplitterDargEnd});
     $('#help').popup();
@@ -170,8 +111,10 @@
     {
         if(status == 'success' && data == "OK")
         {
-            alert("succeeded");
-            $('#commentmodal').sidebar('toggle');
+            //alert("succeeded");
+            $('#mdeditor-modal').sidebar('hide');
+            if(editor_mode == MODE_EDIT)
+                alert("OK");
             updatethreaddata();
         }
         else
@@ -180,12 +123,12 @@
         }
     }
 
-    $('#submit').bind('click', function(){
-        $.post("/savepost", {title:'', body:previewHtml, owner_bbs:0, owner_blog:0, parent_post_id:parent_post_id, ancestor_post_id:ancestor_post_id, is_comment:1}, savepostover);
+    $('#mdeditor-submit').bind('click', function(){
+        $.post("/savepost", {original_post:post_id, editor_mode:editor_mode, title:$("#mdeditor-title").val(), body:mdi.getWholeText()/*previewHtml*/, owner_bbs:0, owner_blog:0, parent_post_id:parent_post_id, ancestor_post_id:ancestor_post_id, is_comment:1}, savepostover);
     });
 
-    $('#close').bind('click', function(){
-        $('#commentmodal').sidebar('toggle');
+    $('#mdeditor-close').bind('click', function(){
+        $('#mdeditor-modal').sidebar('hide');
     });
     
     function buildComments(posts){
@@ -195,24 +138,27 @@
         var i;
         for(i = 0; i < posts.length; ++ i){
             comments +=
-            '<div class="comment">\
-                <div class="ui segment">\
-                    <a><i class="user icon"></i></a>\
+            '<div class="comment post-comment">\
+                <div class="ui segment post-comments-segment">\
+                    <a><img class="rounded ui image bbs-title-avatar" src ="http://www.gravatar.com/avatar/' + posts[i].author.avatar_hash + '?s=24">\</a>\
                     <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> '
                     + posts[i].post.post_time + ' | ' 
                     + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
                     + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
-                    <div class="ui mini circular green inverted button commentbutton" id =' + posts[i].post.id +'>\
+                    <div class="ui tiny green inverted button reply-button" id =' + posts[i].post.id +'>\
                         reply\
                     </div>'
-                    + posts[i].post.body +
-                '</div>\
-                <div class="comments">';
+                     + converter.makeHtml(posts[i].post.body) +
+                '</div>';
                 
-                comments += buildComments(posts[i].child_posts);
-                
-            comments +=
-                '</div>\
+                if(posts[i].child_posts.length != 0){
+                    comments += '\
+                    <div class="ui comments post-comments">';
+                    comments += buildComments(posts[i].child_posts);
+                    comments +=
+                    '</div>';
+                }
+            comments += '\
             </div>';
         }
         
@@ -223,31 +169,41 @@
         if(status == "success"){
             var thread = JSON.parse(data);
             
+            post_title = thread.post.title;
+            post_body = thread.post.body;
+            
+            edit_button_string = "";
+            if(user_is_author)
+                edit_button_string = '<div class="ui tiny red button editbutton" id ="post-edit-button">edit</div>';
+            
             var threadstring = '\
-                <div class="ui twelve wide column">\
                     <div class="ui stacked segment">\
-                        <div class="ui red ribbon label">' + thread.post.post_time + '</div>\
-                                by <a href="/user/' + thread.author.name + ')">' + thread.author.name + '</a> | '
+                        <div class="ui"></div>\
+                                <img class="rounded ui image bbs-title-avatar" src ="http://www.gravatar.com/avatar/' + thread.author.avatar_hash + '?s=48">'
+                                + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> | '
+                                + thread.post.post_time + ' | '
                                 + thread.post.view_count + '<i class="unhide icon"></i> | '
                                 + thread.post.comment_count + '<i class="comment outline icon"></i> | '
                                 + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
                                 + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
-                                <div class="ui mini green circular button commentbutton" id = ' + thread.post.id + '>\
+                                <div class="ui tiny green button reply-button" id = ' + thread.post.id + '>\
                                     reply\
-                                </div>\
-                            <div class="ui top right green attached label">\
+                                </div>' + edit_button_string + 
+                            '<div class="ui top right green attached label">\
                                 <a href="/post/t/' + thread.post.title + '">permanent link</a>\
-                            </div><br><br>\
-                            <div class="BT-post"><div>' + thread.post.body + '</div></div>\
-                        </div>\
-                        <div class="ui horizontal divider">\
-                            <i class="smile icon"></i>\
-                        </div>\
-                        <div class="ui threaded comments">';
+                            </div><br><br><h2>' + thread.post.title + '</h2>\
+                            <div class="ui horizontal divider">\
+                                <i class="smile icon"></i>\
+                            </div>\
+                            <div class="BT-post"><div>' + converter.makeHtml(thread.post.body) + '</div></div>\
+                        </div>';
                         
-            threadstring += buildComments(thread.child_posts);
-            threadstring += '</div>\
-            </div>';
+                        if(thread.child_posts.length != 0){
+                            threadstring +='<div class="ui threaded comments post-comments">';
+                            threadstring += buildComments(thread.child_posts);
+                            threadstring += '</div>';
+                        }
+            threadstring +='</div>';
             
             $("#thread").html(threadstring);
             
@@ -255,16 +211,28 @@
                 hljs.highlightBlock(block);
             });
             
-            //$("#commentmodal").modal('setting', 'closable', false);
-            $("#commentmodal").sidebar({overlay: true});
+            $("#mdeditor-modal").sidebar({overlay: true});
             
-            $(".commentbutton").click(function(){
+            $(".reply-button").click(function(){
                 if(!can_reply){
                     alert("register and confirm your account first");
                     return;
                 }
-                $('#commentmodal').sidebar('toggle');
+                $('#mdeditor-mode').html('REPLY');
+                $('#mdeditor-modal').sidebar('show');
+                editor_mode = MODE_REPLY;
                 parent_post_id = this.id;
+            });
+                
+            $("#post-edit-button").click(function(){
+                $('#mdeditor-modal').sidebar('show');
+                editor_mode = MODE_EDIT;
+                parent_post_id = 0;// no use
+                
+                $('#mdeditor-mode').html('EDIT');
+                $("#mdeditor-title").val(post_title);
+                mdi.setWholeText(post_body);
+                //$("#mdeditor-body").html(post_title);
             });
         }
         else{
@@ -278,5 +246,15 @@
     
     updatethreaddata();
     
+    {% if g.platform_setting.mode == 1 %}
+    bbstree = new BBSTREE({{ owner_bbs }});
+    bbstree.getbbstree();
+    {% endif %}
+    
 </script>
+{% if g.platform_setting.mode == 1 %}
+<style type="text/css">
+.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+</style>
+{% endif %}
 {% endblock %}

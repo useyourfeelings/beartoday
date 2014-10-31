@@ -3,6 +3,11 @@ var mdi = new MDI(editor);
 var converter = new Markdown.getSanitizingConverter();
 var previewHtml = '';
 
+function nl2br(text){
+    return text.replace(/\n/g, " <br>\n");
+}
+converter.hooks.chain("postSpanGamut", nl2br);
+
 function makePreview(){
     previewHtml = converter.makeHtml(mdi.getWholeText())
     $('#markdown_preview').html('<div class="ui stacked segment">' + previewHtml + '</div>');
@@ -21,7 +26,7 @@ mdi.setShowPrintMargin(false);
 mdi.setFontSize(16);
 mdi.setTheme("ace/theme/chrome");
 mdi.setMode("ace/mode/markdown");
-mdi.loadStorageState();
+//mdi.loadStorageState();
 
 mdi.focus();
 mdi.setOnChangeCallback(onChange);

@@ -89,10 +89,8 @@
     <!--<div class="ui horizontal icon divider"><i class="circular comment outline icon"></i></div>-->
 
 <div id = "markdown_main">
-    <div id="markdown_editor">##USE YOUR FEELINGS
-    </div>
-    <div id = "markdown_preview">
-    </div>
+    <div id="markdown_editor"></div>
+    <div id = "markdown_preview"></div>
 </div>
 
 {% endblock %}
@@ -150,7 +148,7 @@
             return;
         }
         
-        $.post("savepost", {title:$('#title').val(), owner_bbs:0, owner_blog:{{ current_user.get_id() }}, body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
+        $.post("savepost", {original_post:0, editor_mode:"new", title:$('#title').val(), owner_bbs:0, owner_blog:{{ current_user.get_id() }}, body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
     });
 
     $('#close').bind('click', function(){

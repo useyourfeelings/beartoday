@@ -46,10 +46,7 @@
             FUNCTION<i class="dropdown icon"></i>
             <div class="menu">
                 {% if current_user.is_authenticated() %}
-                {% if current_user.is_god() %}
-                <a class="item"><i class="ordered list icon"></i>TODO LIST</a>
                 <a class="item" href="{{ url_for('main.compose') }}"><i class="edit icon"></i>Write blog</a>
-                {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -67,18 +64,20 @@
                     <a class="item">中文</a>
                 </div>
             </div>-->
+            {% if g.platform_setting.show_about_link %}
             <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
                 <i class="teal book icon"></i>ABOUT
             </a>
+            {% endif %}
             <div class="ui dropdown item">
-                <i class="user icon"></i>
+                <i class="user icon"></i>帐号
                 <div class="menu">
                     {% if current_user.is_authenticated() %}
                     <!--<a class="item">设置</a>-->
                     {% if current_user.is_god() %}
                     <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
                     {% endif %}
-                    <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
+                    <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Who am I</a>
                     <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                     {% else %}
                     <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>

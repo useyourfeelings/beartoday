@@ -4,13 +4,12 @@
 
 <div class="ui three column grid">
     <div class="column"></div>
-        <div class=" column">
-            {{ wtf.basic_form(form, placeholder = True) }}
-            <a href="{{ url_for('auth.login') }}">LOG IN</a>
-            <br>
-            <br>
-            <!--<a href="{{ url_for('auth.password_reset_request') }}">FORGET PASSWORD?</a>-->
-        </div>
+    <div class=" column">
+        {{ wtf.basic_form(form, placeholder = True, button_map = {'submit':'tiny green'}) }}
+        <!--<a href="{{ url_for('auth.login') }}">LOG IN</a>-->
+        <br>
+        <br>
+        <!--<a href="{{ url_for('auth.password_reset_request') }}">FORGET PASSWORD?</a>-->
     </div>
 </div>
 {% endblock %}

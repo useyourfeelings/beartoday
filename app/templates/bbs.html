@@ -3,127 +3,49 @@
 {% block body %}
 <div class="ui grid">
     <div class="ui three wide column">
-        <table class="ui purple celled table segment">
-            <thead>
-                <tr>
-                    <th>
-                        SUB BBS
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <a href="{{url_for('main.bbs', name = parent_bbs.name)}}"><i class="level up icon"></i></a>
-                    </td>
-                </tr>
-                {% for bbs in children_bbs %}
-                <tr>
-                    <td>
-                        <i class="browser icon"></i><a href="{{url_for('main.bbs', name = bbs.name)}}">{{ bbs.name }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="ui tiny top attached header">BBS TREE</div>
+        <div class="bbstree-segment">
+            <div class="ui attached segment">
+                <ul id="bbstree" class="ztree bbstree"></ul>
+            </div>
+        </div>
     </div>
-    <div class="ui ten wide column">
+    <div class="ui eight wide column">
         {{ show_flash() }}
         
         <div id="bbsposts"></div>
     </div>
-    <div class="ui three wide column">
-    </div>
-</div>
-
-<div class="ui very wide right sidebar" id="commentmodal">
-    <div class="ui fixed transparent main inverted menu">
-        <div class="ui item">
-            <div class="ui left small icon input">
-                <input type="text" placeholder="title" id="title">
-                <i class="edit icon"></i>
-            </div>
+    <div class="ui five wide column">
+        {% if not current_user.is_authenticated() %}
+        <div class="ui tiny top attached header">{{ g.platform_setting.window_title }}</div>
+        <div class="ui attached segment">
+            <a href="{{ url_for('auth.login') }}"><div class="ui mini green button">登 录</div></a>
+            <a href="{{ url_for('auth.register') }}"><div class="ui mini orange button">注 册</div></a>
         </div>
-        <div class="ui icon item">
-            <div class="ui tiny dropdown button">
-                <i class="wrench icon"></i>
-                <div class="menu">
-                    <div class="item" id="undo"><i class="undo icon"></i>undo</div>
-                    <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
-                    <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
-                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
-                    <div class="ui tiny button"><i class="align left icon"></i></div>
-                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
-                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
-                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
-                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
-
-                    <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
-                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
-                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
-
-                    <div class="item" id="exporthtml">export as HTML</div>
-                    <div class="item" id="exportmd">export as MD</div>
-                </div>
-            </div>
-            <div class="ui tiny positive button" id="submit">publish</div>
-            <div class="ui tiny red button"  id="close">close</div>
-        </div>
-    </div>
-    <div>
-        <div id = "markdown_main">
-            <div id="markdown_editor">USE YOUR FEELINGS
-            </div>
-            <div id = "markdown_preview">
-            </div>
+        {% endif %}
+        <div class="ui tiny top attached header" id="announcement-title"></div>
+        <div class="ui attached segment" id="announcement-body">
         </div>
     </div>
 </div>
+
+{% include  "bbs_post_editor.html" %}
 {% endblock %}
 
 {% block script %}
 
-<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Converter.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Sanitizer.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'ace-builds-master/src-noconflict/ace.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'jcubic-jquery.splitter/css/jquery.splitter.css') }}" />
-<script type="text/javascript" src="{{ url_for('static', filename = 'jcubic-jquery.splitter/js/jquery.splitter-0.14.0.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'markdown_interface/markdown_interface.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'FileSaver/FileSaver.js') }}"></script>
 
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
 <script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
-
-<style type="text/css" media="screen">
-    #markdown_editor { 
-        position: absolute;
-        top: 0px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow-y:hidden;
-    }
-    #markdown_main { 
-        position: absolute;
-        top: 42px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height:100% - 42px;
-        overflow: hidden;
-    }
-</style>
-<script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='zTree_v3/js/jquery.ztree.all-3.5.js') }}"></script>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='zTree_v3/css/zTreeStyle/zTreeStyle.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename = 'beartoday/bbstree.js') }}"></script>
 <script type="text/javascript">
-    //monokai_sublime tomorrow pojoaque
-    
+    var current_page = {{ page }};
     var can_reply = {{ can_reply }};
-    var bbs_id = {{ bbs.id }}
-    /*
-    var post_id = {{ post_id }};
-    var parent_post_id = {{ parent_post_id }};
-    var ancestor_post_id = {{ ancestor_post_id }};
-    */
+    var bbs_id = {{ bbs.id }};
+    var bbs_name = "{{ bbs.name }}";
+    
     $('#markdown_main').split({orientation:'horizontal', limit:220, onDragEnd:onSplitterDargEnd});
     $('#help').popup();
     
@@ -131,9 +53,9 @@
     {
         if(status == 'success' && data == "OK")
         {
-            alert("succeeded");
-            $('#commentmodal').sidebar('toggle');
-            updateposts();
+            //alert("succeeded");
+            $('#mdeditor-modal').sidebar('hide');
+            updateposts(bbs_id, 1);
         }
         else
         {
@@ -141,16 +63,16 @@
         }
     }
 
-    $('#submit').bind('click', function(){
-        if($("#title").val() == ""){
+    $('#mdeditor-submit').bind('click', function(){
+        if($("#mdeditor-title").val() == ""){
             alert("title is needed");
             return;
         }
-        $.post("/savepost", {title:$("#title").val(), owner_bbs:bbs_id, owner_blog:0, body:previewHtml, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
+        $.post("/savepost", {original_post:0, editor_mode:"new", title:$("#mdeditor-title").val(), owner_bbs:bbs_id, owner_blog:0, body:mdi.getWholeText()/*body:previewHtml*/, parent_post_id:0, ancestor_post_id:0, is_comment:0}, savepostover);
     });
 
-    $('#close').bind('click', function(){
-        $('#commentmodal').sidebar('toggle');
+    $('#mdeditor-close').bind('click', function(){
+        $('#mdeditor-modal').sidebar('hide');
     });
     
     function buildposts(posts){  // create all tr
@@ -159,15 +81,20 @@
             return '';
         var i;
         for(i = 0; i < posts.length; ++ i){
+            var points = ""
+            if(posts[i].post.title.length > 40)
+                points = " ..."
             html +='\
-                <tr><td><br>\
-                    <a class="posttitle" href="/post/i/' + posts[i].post.id + '">' + posts[i].post.title + '</a><br><br>\
-                    by <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> | '
-                    + posts[i].post.post_time + ' | '
-                    + posts[i].post.like_count + ' <a class="like"><i class="thumbs up outline icon"></i></a> | '
-                    + posts[i].post.dislike_count + ' <a class="dislike"><i class="thumbs down outline icon"></i></a> | '
-                    + posts[i].post.view_count + ' <i class="unhide icon"></i> | '
-                    + posts[i].post.comment_count + ' <i class="comment outline icon"></i>\
+                <tr><td>\
+                    <a href="/user/' + posts[i].author.name + '"><img class="rounded ui image bbs-title-avatar" src ="http://www.gravatar.com/avatar/' + posts[i].author.avatar_hash + '?s=24"></a>\
+                    <a class="posttitle" href="/post/i/' + posts[i].post.id + '">' + posts[i].post.title.substring(0, 40) + points + '</a> \
+                    <div class="bbs-post-info"><a href="/user/' + posts[i].post.last_commenter + '">' + posts[i].post.last_commenter + '</a> '
+                    + posts[i].post.last_reply_time
+                    //+ posts[i].post.like_count + ' <a class="like"><i class="thumbs up outline icon"></i></a> | '
+                    //+ posts[i].post.dislike_count + ' <a class="dislike"><i class="thumbs down outline icon"></i></a> | '
+                    //+ posts[i].post.view_count + ' <i class="unhide icon"></i> | '
+                    //+ posts[i].post.comment_count + ' <i class="comment outline icon"></i>\
+                    + ' <div class="ui tiny button bbs-post-comments-count-button">' + posts[i].post.comment_count + '/' + posts[i].post.view_count + '</div></div>\
                 </td></tr>';
         }
         
@@ -176,22 +103,35 @@
     
     function getbbspostsover(data, status){
         if(status == "success"){
-            var posts = JSON.parse(data);
+            
+            data_parsed = JSON.parse(data);
+            var posts = data_parsed.posts;
             
             var poststring = '\
                 <table class="ui celled purple table segment posts">\
                     <thead>\
                         <tr>\
                             <th>\
-                                <div class="ui small red button" id="createpost">NEW TOPIC</div>\
-                                <div class="ui small green button" id="refresh">REFRESH</div>\
+                                <div class="ui tiny red button" id="createpost">NEW TOPIC</div>\
+                                <div class="ui tiny green button" id="refresh">REFRESH</div>\
                             </th>\
                         </tr>\
                     </thead>\
                     <tbody>';
                     
             poststring += buildposts(posts);
-                        
+            
+            pagebar = data_parsed.pagebar;
+            current_page = pagebar.current_page;
+            buttons = pagebar.buttons;
+            poststring += '<tr><td><div class="ui buttons">'
+            for(i in buttons){
+                if(buttons[i].page == current_page && parseInt(buttons[i].title))
+                    poststring += '<div class="ui tiny green button pagebutton" page = ' + buttons[i].page + '> ' + buttons[i].title + '</div>';
+                else
+                    poststring += '<div class="ui tiny button pagebutton" page = ' + buttons[i].page + '> ' + buttons[i].title + '</div>';
+            }
+            poststring += '</div><div class="bbs-page-seeker"><input id = "bbs-page-seeker-input" class="bbs-page-seeker-input" type="text"><div class="ui tiny green button" id="bbs-page-seeker-button">GO</div></div></td></tr>'
             poststring += '</tbody></table>';
             
             //alert(poststring);
@@ -203,11 +143,25 @@
                     alert("register and confirm your account first");
                     return;
                 }
-                $('#commentmodal').sidebar('toggle');
+                $('#mdeditor-mode').html('NEW');
+                $('#mdeditor-modal').sidebar('show');
             });
             
             $("#refresh").click(function(){
-                updateposts();
+                updateposts(bbs_id, current_page);
+            });
+            
+            $(".pagebutton").click(function(){
+                //updateposts(bbs_id, $(this).attr('page'));
+                page = $(this).attr('page');
+                if(page != current_page)
+                    window.location.href="/bbs/" + bbs_name + "?page=" + page; 
+            });
+            
+            $("#bbs-page-seeker-button").click(function(){
+                page = parseInt($("#bbs-page-seeker-input").val());
+                if(page > 0 && page != current_page)
+                    window.location.href="/bbs/" + bbs_name + "?page=" + page; 
             });
         }
         else{
@@ -215,16 +169,41 @@
         }
     }
     
-    $("#commentmodal").sidebar({overlay: true});
+    $("#mdeditor-modal").sidebar({overlay: true});
     
-    function updateposts(){
-        $.post("/getbbsposts", {bbs_id:{{ bbs.id }}}, getbbspostsover);
+    function updateposts(bbs_id, page){
+        $.post("/getbbsposts", {bbs_id:bbs_id, page:page}, getbbspostsover);
     }
-    
-    updateposts();
-    
+
+    $(document).ready(function(){
+        bbstree = new BBSTREE(bbs_id);
+        bbstree.getbbstree();
+        updateposts(bbs_id, current_page);
+        
+        function getrightinfoover(data, status)
+        {
+            if(status == 'success')
+            {
+                var data_parsed = JSON.parse(data);
+                converter.makeHtml(data_parsed.title)
+                $("#announcement-title").html(converter.makeHtml(data_parsed.title));
+                $("#announcement-body").html(converter.makeHtml(data_parsed.body));
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });
+            }
+            else
+            {
+            }
+        }
+        
+        $.post("/getrightinfo", {}, getrightinfoover);
+    });
 </script>
 {% endblock %}
 
 {% block css %}
+<style type="text/css">
+.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+</style>
 {% endblock %}

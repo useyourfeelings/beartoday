@@ -1,0 +1,73 @@
+<div class="ui very wide right sidebar" id="mdeditor-modal">
+    <div class="ui fixed transparent main inverted menu">
+        <div class="ui item" id="mdeditor-mode">
+            REPLY
+        </div>
+        <div class="ui item">
+            <div class="ui left small icon input">
+                <input type="text" placeholder="title" id="mdeditor-title">
+                <i class="edit icon"></i>
+            </div>
+        </div>
+        <div class="ui icon item">
+            <div class="ui tiny dropdown button">
+                <i class="wrench icon"></i>
+                <div class="menu">
+                    <div class="item" id="undo"><i class="undo icon"></i>undo</div>
+                    <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
+                    <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
+                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
+                    <div class="ui tiny button"><i class="align left icon"></i></div>
+                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
+                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
+                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
+                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
+
+                    <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
+                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
+                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
+
+                    <div class="item" id="exporthtml">export as HTML</div>
+                    <div class="item" id="exportmd">export as MD</div>
+                </div>
+            </div>
+            <div class="ui tiny positive button" id="mdeditor-submit">publish</div>
+            <div class="ui tiny red button"  id="mdeditor-close">close</div>
+        </div>
+    </div>
+    <div>
+        <div id = "markdown_main">
+            <div id="markdown_editor"></div>
+            <div id = "markdown_preview"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Converter.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'pagedown/Markdown.Sanitizer.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'ace-builds-master/src-noconflict/ace.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'jcubic-jquery.splitter/css/jquery.splitter.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'jcubic-jquery.splitter/js/jquery.splitter-0.14.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'markdown_interface/markdown_interface.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'FileSaver/FileSaver.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
+
+<style type="text/css" media="screen">
+    #markdown_editor { 
+        position: absolute;
+        top: 0px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow-y:hidden;
+    }
+    #markdown_main { 
+        position: absolute;
+        top: 42px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height:100% - 42px;
+        overflow: hidden;
+    }
+</style>

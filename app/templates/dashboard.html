@@ -10,16 +10,18 @@
         </div>
     </div>
     <div class="ui four wide column">
-        <div class="ui segment">
-            {{ wtf.basic_form(form, placeholder = True) }}
-        </div>
+        {{ wtf.basic_form(form, placeholder = True) }}
+        <div class="ui tiny green button" id="edit-announcement">编辑公告</div>
     </div>
 </div>
 
+{% include  "bbs_post_editor.html" %}
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" src="static/zTree_v3/js/jquery.ztree.all-3.5.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='zTree_v3/js/jquery.ztree.all-3.5.js') }}"></script>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='zTree_v3/css/zTreeStyle/zTreeStyle.css') }}">
 <script>
 var bbstreesetting = {
@@ -32,9 +34,6 @@ var bbstreesetting = {
         drag: {
             isMove: false,
             isCopy: false,
-            //prev: false,
-            //next: false,
-            //inner: true,
             autoOpenTime: 0
         }
     },
@@ -57,11 +56,8 @@ var bbstreesetting = {
         enable: false
     },
     callback: {
-        //beforeDrag: beforeDrag,
-        //beforeDrop: beforeDrop,
         beforeRemove: beforeRemove,
         beforeRename: beforeRename,
-        //onClick: groupOnClick,
     }
 };
 
@@ -213,6 +209,65 @@ $(document).ready(function(){
     $.post("getbbstree", {}, getbbstreeover);
     //what if error occured
 });
+
+    $('#markdown_main').split({orientation:'horizontal', limit:220, onDragEnd:onSplitterDargEnd});
+    $('#help').popup();
+    
+    function saverightinfoover(data, status)
+    {
+        if(status == 'success' && data == "OK")
+        {
+            //alert("succeeded");
+            $('#mdeditor-modal').sidebar('toggle');
+            alert("OK");
+        }
+        else
+        {
+            alert("failed");
+        }
+    }
+
+    $('#mdeditor-submit').bind('click', function(){
+        if($("#mdeditor-title").val() == ""){
+            alert("title is needed");
+            return;
+        }
+        $.post("/saverightinfo", {title:$("#mdeditor-title").val(), body:mdi.getWholeText()}, saverightinfoover);
+    });
+
+    $('#mdeditor-close').bind('click', function(){
+        $('#mdeditor-modal').sidebar('hide');
+    });
+    
+    $("#mdeditor-modal").sidebar({overlay: true});
+    
+    $("#edit-announcement").click(function(){
+        $('#mdeditor-modal').sidebar('toggle');
+        
+    });
+    
+    function getrightinfoover(data, status)
+    {
+        if(status == 'success')
+        {
+            //alert("succeeded");
+            var data_parsed = JSON.parse(data);
+            mdi.setWholeText(data_parsed.body);
+            $("#mdeditor-title").val(data_parsed.title);
+        }
+        else
+        {
+            //alert("failed");
+        }
+    }
+    
+    $('#mdeditor-modal').sidebar("setting",{
+        onShow:function(){
+                $.post("/getrightinfo", {}, getrightinfoover);
+            }
+        }
+    );
+    
 </script>
 <style type="text/css">
 .ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
