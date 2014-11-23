@@ -172,7 +172,7 @@ a.dislike:hover {
 }
 
 
-a.posttitle {
+a.bbs-posttitle {
     font-weight:bold;
     color: #333333;*#aaaa44;
     text-decoration: none;
@@ -180,13 +180,30 @@ a.posttitle {
     padding:2px 0px 0px 0px;
 }
 
-a.posttitle:hover {
+a.bbs-posttitle:hover {
+  color: #00BA00;
+}
+
+a.blog-posttitle {
+    font-weight:bold;
+    color: #333333;*#aaaa44;
+    text-decoration: none;
+    font-size:26px;
+    padding:2px 0px 0px 0px;
+}
+
+a.blog-posttitle:hover {
   color: #00BA00;
 }
 
 .bbs-title-avatar {
     float:left;
     padding:0px 6px 0px 0px;
+}
+
+.blog-title-avatar {
+    float:left;
+    padding:2px 4px 0px 0px;
 }
 
 .bbs-post-info{
@@ -238,6 +255,9 @@ a.posttitle:hover {
     padding:2px 0px 2px 2px;
 }*/
 
+.todolist-tab > .ui.item.menu{
+    text-align:left;
+}
 
 /* ************** */
 

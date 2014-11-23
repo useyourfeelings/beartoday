@@ -87,7 +87,7 @@
             html +='\
                 <tr><td>\
                     <a href="/user/' + posts[i].author.name + '"><img class="rounded ui image bbs-title-avatar" src ="http://www.gravatar.com/avatar/' + posts[i].author.avatar_hash + '?s=24"></a>\
-                    <a class="posttitle" href="/post/i/' + posts[i].post.id + '">' + posts[i].post.title.substring(0, 40) + points + '</a> \
+                    <a class="bbs-posttitle" href="/post/i/' + posts[i].post.id + '">' + posts[i].post.title.substring(0, 40) + points + '</a> \
                     <div class="bbs-post-info"><a href="/user/' + posts[i].post.last_commenter + '">' + posts[i].post.last_commenter + '</a> '
                     + posts[i].post.last_reply_time
                     //+ posts[i].post.like_count + ' <a class="like"><i class="thumbs up outline icon"></i></a> | '
