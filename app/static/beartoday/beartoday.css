@@ -45,12 +45,17 @@ h3::selection {
 
 body#example {
   font-family: "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif/*rtl:prepend:"Droid Arabic Kufi","Droid Sans", */;
-  background: #f0f0d2 ;*url(../semantic/examples/images/bg.jpg) repeat;
+  background: #000 ;*url(../semantic/examples/images/bg.jpg) repeat;
   margin: 0px;
   padding: 0px;
   color: #91010;
   min-width: 320px;
   *text-shadow: 1px 1px 1px #5f5f5f;
+  background-image: url('../images/tree08.jpg');
+  background-repeat:no-repeat;
+  background-position:0 0;
+  background-attachment:fixed;
+  *background-size:100% auto;
 }
 body > .content  {
   background: #f3f3aa ;*url(../semantic/examples/images/bg.jpg) repeat;
