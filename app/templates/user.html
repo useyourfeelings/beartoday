@@ -24,7 +24,7 @@
         {% endif %}
         <div class="ui segment">
         <a href="{{ url_for('main.blog', name = user.name) }}">
-            <img class="rounded ui image bbs-title-avatar" src ="http://www.gravatar.com/avatar/{{ user.avatar_hash }}?s=32">
+            <img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/{{ user.avatar_hash }}?s=32">
         <a href="/blog/{{ user.name }}">{{ user.name }}'s BLOG</a>
         <p>last seen at {{ user.last_seen_time }}</p>
         </div>
