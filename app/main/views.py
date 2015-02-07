@@ -15,6 +15,8 @@ import json, re, time, sys, html
 
 from datetime import datetime
 
+from .sources import source_drawings, source_videos, source_links
+
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
@@ -674,3 +676,14 @@ def getbbsposts():
         print(sys.exc_info()[1])
         
     return json.dumps(reply, cls = ComplexEncoder)
+
+@main.route('/drawings')
+def drawings():
+    print("/drawings")
+    print(type(drawings))
+    return render_template("drawings.html", drawings = source_drawings)
+
+@main.route('/videos')
+def videos():
+    print("/videos")
+    return render_template("videos.html", videos = source_videos)

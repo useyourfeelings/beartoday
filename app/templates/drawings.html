@@ -1,0 +1,23 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+
+<div class="ui four column grid">
+    {% for item in drawings %}
+    <div class="column">
+      <div class="ui segment">
+        <a href="{{ item }}" class="ui medium bordered image">
+            <img src="{{ item }}">
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block css %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "layout_main.html" %}
+
+{% block body %}
+
+<div class="ui two column grid">
+    {% for item in videos %}
+    <div class="column">
+        <div class="ui segment">
+            <embed src="{{ item }}" allowFullScreen="true" quality="high" width=100% height=400 align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block css %}
+{% endblock %}
