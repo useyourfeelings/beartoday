@@ -142,12 +142,13 @@
             return '';
         var i;
         for(i = 0; i < posts.length; ++ i){
+            localtime = moment.utc(posts[i].post.post_time).toDate();
             comments +=
             '<div class="comment post-comment">\
                 <div class="ui segment post-comments-segment">\
                     <a><img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + posts[i].author.avatar_hash + '?s=24">\</a>\
                     <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> '
-                    + posts[i].post.post_time + ' | ' 
+                    + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | ' 
                     + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
                     + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
                     <div class="ui tiny green inverted button reply-button" id =' + posts[i].post.id +'>\
@@ -180,13 +181,15 @@
             edit_button_string = "";
             if(user_is_author)
                 edit_button_string = '<div class="ui tiny red button editbutton" id ="post-edit-button">edit</div>';
+                
+            localtime = moment.utc(thread.post.post_time).toDate();
             
             var threadstring = '\
                     <div class="ui stacked segment">\
                         <div class="ui"></div>\
                                 <img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + thread.author.avatar_hash + '?s=48">'
                                 + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> | '
-                                + thread.post.post_time + ' | '
+                                + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | '
                                 + thread.post.view_count + '<i class="unhide icon"></i> | '
                                 + thread.post.comment_count + '<i class="comment outline icon"></i> | '
                                 + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
