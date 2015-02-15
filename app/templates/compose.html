@@ -4,17 +4,9 @@
 {% endblock %}
 
 {% block body %}
-<div class="ui fixed transparent main inverted menu">
+<div class="ui fixed transparent main menu">
     <a class="item"  href = "{{ url_for('main.dash') }}">
         <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
-    </a>
-    <!--
-    <a class="item"  href = "{{ url_for('main.mainbbs') }}">
-        <i class="chat outline icon"></i>BBS
-    </a>
-    -->
-    <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
-        <i class="teal book icon"></i>ABOUT
     </a>
     {% if g.platform_setting.show_blog_link %}
     <a class="item"  href = "{{ url_for('main.mainblog') }}">
@@ -22,22 +14,22 @@
     </a>
     {% endif %}
     <div class="ui icon item">
-        <div class="ui tiny button" id="undo"><i class="undo icon"></i></div>
-        <div class="ui tiny button" id="redo"><i class="repeat icon"></i></div>
-        <div class="ui tiny button" id="dobold"><i class="bold icon"></i></div>
+        <div class="ui tiny red button" id="undo"><i class="undo icon"></i></div>
+        <div class="ui tiny yellow button" id="redo"><i class="repeat icon"></i></div>
+        <div class="ui tiny blue button" id="dobold"><i class="bold icon"></i></div>
         <!--<div class="ui tiny button"><i class="align center icon"></i></div>
         <div class="ui tiny button"><i class="align left icon"></i></div>
         <div class="ui tiny button"><i class="align right icon"></i></div>-->
-        <div class="ui tiny button" id="addurl"><i class="url icon"></i></div>
-        <div class="ui tiny button" id="addimg"><i class="photo icon"></i></div>
+        <div class="ui tiny green button" id="addurl"><i class="linkify icon"></i></div>
+        <div class="ui tiny orange button" id="addimg"><i class="file image outline icon"></i></div>
         <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
     </div>
     
     <div class="ui icon item">
-        <div class="ui tiny button" id="newdoc"><i class="file outline icon"></i></div>
+        <div class="ui tiny pink button" id="newdoc"><i class="file outline icon"></i></div>
         <!--<div class="ui tiny button"><i class="save icon"></i></div>
         <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
-        <div class="ui tiny dropdown button">
+        <div class="ui tiny purple dropdown button">
             <i class="share icon"></i>
             <div class="menu">
                 <div class="item" id="exporthtml">export as HTML</div>
@@ -45,7 +37,7 @@
             </div>
         </div>
         <!--<div class="ui tiny button"><i class="setting icon"></i></div>-->
-        <div class="ui tiny button " id="help" data-content="enjoy :)" data-position="bottom center"><i class="help icon"></i></div>
+        <div class="ui tiny teal button " id="help" data-content="enjoy :)" data-position="bottom center"><i class="help icon"></i></div>
     </div>
     
     <div class="item">
@@ -59,13 +51,9 @@
         <div class="ui tiny red button"  id="close">close</div>
     </div>
     <div class="right menu">
-        <!--<div class="ui dropdown item">
-        语言 <i class="dropdown icon"></i>
-            <div class="menu">
-                <a class="item">英文</a>
-                <a class="item">中文</a>
-            </div>
-        </div>-->
+        <a class="item" href = "https://github.com/useyourfeelings">
+            <i class = "github alternate icon"></i>
+        </a>
         <div class="ui dropdown item">
             <i class="user icon"></i>
             <div class="menu">
@@ -109,7 +97,7 @@
     }
     #markdown_main { 
         position: absolute;
-        top: 42px;
+        top: 36px;
         right: 0;
         bottom: 0;
         left: 0;
@@ -119,11 +107,11 @@
 </style>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
 <script>
-    function getAllMethods(object) {
-        return Object.getOwnPropertyNames(object).filter(function(property) {
-            return true;//typeof object[property] == 'function';
-        });
-    }
+    //function getAllMethods(object) {
+    //    return Object.getOwnPropertyNames(object).filter(function(property) {
+    //        return true;//typeof object[property] == 'function';
+    //    });
+    //}
     
     $('#markdown_main').split({orientation:'vertical', limit:300, onDragEnd:onSplitterDargEnd});
     

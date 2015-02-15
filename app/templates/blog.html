@@ -1,10 +1,7 @@
 {% extends "layout_main.html" %}
 
 {% block body %}
-
 <div class="ui grid">
-    <!--<div class="ui three wide column">
-    </div>-->
     <div class="ui six wide column">
         {{ show_flash() }}
         {% for row in content %}
@@ -19,9 +16,6 @@
                     localtime = moment.utc("{{ row.Post.post_time }}").toDate();
                     $("#post_info_{{loop.index}}").html('{{ row.Post.view_count }} <i class="unhide icon"></i>' + '{{ row.Post.comment_count }} <i class="comment outline icon"></i>' + moment(localtime).format("YYYY-MM-DD HH:mm:ss"));
                 </script>
-            <!--<div class="ui top right green attached label">
-                <a href="{{url_for('main.post_title', title = row.Post.title)}}">read more</a>
-            </div>-->
             </div>
         {% else %}
         <div class="ui stacked segment">
@@ -30,7 +24,6 @@
         {% endfor %}
     </div>
 </div>
-
 {% endblock %}
 
 {% block script %}

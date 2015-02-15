@@ -1,5 +1,6 @@
-<div class="ui very wide right sidebar" id="mdeditor-modal">
-    <div class="ui fixed transparent main inverted menu">
+<!--<div class="ui very wide bottom sidebar" id="mdeditor-modal">-->
+<div class="ui modal" id="mdeditor-modal">
+    <div class="ui main menu">
         <div class="ui item" id="mdeditor-mode">
             REPLY
         </div>
@@ -9,24 +10,17 @@
                 <i class="edit icon"></i>
             </div>
         </div>
+        <!--
         <div class="ui icon item">
-            <div class="ui tiny dropdown button">
+            <div class="ui tiny yellow dropdown button">
                 <i class="wrench icon"></i>
                 <div class="menu">
                     <div class="item" id="undo"><i class="undo icon"></i>undo</div>
                     <div class="item" id="redo"><i class="repeat icon"></i>redo</div>
                     <div class="item" id="dobold"><i class="bold icon"></i>bold</div>
-                    <!--<div class="ui tiny button"><i class="align center icon"></i></div>
-                    <div class="ui tiny button"><i class="align left icon"></i></div>
-                    <div class="ui tiny button"><i class="align right icon"></i></div>-->
-                    <div class="item" id="addurl"><i class="url icon"></i>addurl</div>
-                    <div class="item" id="addimg"><i class="photo icon"></i>addimg</div>
-                    <!--<div class="ui tiny button"><i class="code icon"></i></div>-->
-
+                    <div class="item" id="addurl"><i class="linkify icon"></i>add url</div>
+                    <div class="item" id="addimg"><i class="file image outline icon"></i>add img</div>
                     <div class="item" id="newdoc"><i class="file outline icon"></i>newdoc</div>
-                    <!--<div class="ui tiny button"><i class="save icon"></i></div>
-                    <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
-
                     <div class="item" id="exporthtml">export as HTML</div>
                     <div class="item" id="exportmd">export as MD</div>
                 </div>
@@ -34,11 +28,38 @@
             <div class="ui tiny positive button" id="mdeditor-submit">publish</div>
             <div class="ui tiny red button"  id="mdeditor-close">close</div>
         </div>
+        -->
+        <div class="ui icon item">
+            <div class="ui tiny red button" id="undo"><i class="undo icon"></i></div>
+            <div class="ui tiny yellow button" id="redo"><i class="repeat icon"></i></div>
+            <div class="ui tiny blue button" id="dobold"><i class="bold icon"></i></div>
+            <div class="ui tiny green button" id="addurl"><i class="linkify icon"></i></div>
+            <div class="ui tiny orange button" id="addimg"><i class="file image outline icon"></i></div>
+        </div>
+        
+        <div class="ui icon item">
+            <div class="ui tiny pink button" id="newdoc"><i class="file outline icon"></i></div>
+            <!--<div class="ui tiny button"><i class="save icon"></i></div>
+            <div class="ui tiny button"><i class="open folder outline icon"></i></div>-->
+            <div class="ui tiny purple dropdown button">
+                <i class="share icon"></i>
+                <div class="menu">
+                    <div class="item" id="exporthtml">export as HTML</div>
+                    <div class="item" id="exportmd">export as MD</div>
+                </div>
+            </div>
+            <!--<div class="ui tiny button"><i class="setting icon"></i></div>-->
+            <div class="ui tiny teal button " id="help" data-content="enjoy :)" data-position="bottom center"><i class="help icon"></i></div>
+        </div>
+        <div class="ui icon item">
+            <div class="ui tiny positive button" id="mdeditor-submit">publish</div>
+            <div class="ui tiny red button"  id="mdeditor-close">close</div>
+        </div>
     </div>
     <div>
-        <div id = "markdown_main">
+        <div id="markdown_main">
             <div id="markdown_editor"></div>
-            <div id = "markdown_preview"></div>
+            <div id="markdown_preview"></div>
         </div>
     </div>
 </div>
@@ -53,21 +74,12 @@
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/beartoday_editor.js') }}"></script>
 
 <style type="text/css" media="screen">
-    #markdown_editor { 
-        position: absolute;
-        top: 0px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow-y:hidden;
+    #markdown_main {
+        width:1000px;
+        height:500px;
     }
-    #markdown_main { 
-        position: absolute;
-        top: 42px;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height:100% - 42px;
-        overflow: hidden;
+    #markdown_editor {
+        *width:300px;   
+        height:500px;
     }
 </style>

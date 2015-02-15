@@ -42,10 +42,15 @@ h3::selection {
     margin-top:8px;
 }
 
+.ui.grid {
+    margin-left:0;
+    margin-right:0;
+}
+
 
 body#example {
   font-family: "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif/*rtl:prepend:"Droid Arabic Kufi","Droid Sans", */;
-  background: #000 ;*url(../semantic/examples/images/bg.jpg) repeat;
+  background: #000 ;
   margin: 0px;
   padding: 0px;
   color: #91010;
@@ -58,7 +63,7 @@ body#example {
   *background-size:100% auto;
 }
 body > .content  {
-  background: #f3f3aa ;*url(../semantic/examples/images/bg.jpg) repeat;
+  background: #f3f3aa ;
 }
 
 h1,
