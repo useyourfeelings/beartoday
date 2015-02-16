@@ -1,42 +1,6 @@
-{% extends "layout_compose.html" %}
+{% extends "layout_main.html" %}
 
 {% block body %}
-<div class="ui fixed transparent main menu">
-    <a class="item"  href = "{{ url_for('main.dash') }}">
-        <i class="green home icon"></i>{{ g.platform_setting.page_title }}
-    </a>
-    {% if g.platform_setting.show_blog_link %}
-    <a class="item"  href = "{{ url_for('main.mainblog') }}">
-        <i class="blue browser icon"></i>BLOG
-    </a>
-    {% endif %}
-    <div class="right menu">
-        <!--<div class="item">
-            <div class="ui small icon input">
-                <input type="text" placeholder="search">
-                <i class="search link icon"></i>
-            </div>
-        </div>-->
-        <a class="item" href = "https://github.com/useyourfeelings">
-            <i class = "github alternate icon"></i>
-        </a>
-        <div class="ui dropdown item">
-            <i class="user icon"></i>
-            <div class="menu">
-                {% if current_user.is_authenticated() %}
-                {% if current_user.is_god() %}
-                <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
-                {% endif %}
-                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
-                <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
-                {% else %}
-                <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="ui grid">
     {% if g.platform_setting.mode == 1 %}
     <div class="ui three wide column">
@@ -67,7 +31,7 @@
 {% endif %}
 
 <script type="text/javascript">
-    
+
     var can_reply = {{ can_reply }};
     var post_id = {{ post_id }};
     var parent_post_id = {{ parent_post_id }};
@@ -116,15 +80,14 @@
             localtime = moment.utc(posts[i].post.post_time).toDate();
             comments +=
             '<div class="comment post-comment">\
-                <div class="ui segment post-comments-segment">\
-                    <a><img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + posts[i].author.avatar_hash + '?s=24">\</a>\
+                <div class="ui blue raised compact segment">\
+                    <div><a><img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + posts[i].author.avatar_hash + '?s=24">\</a>\
                     <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> '
                     + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | ' 
                     + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
                     + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
-                    <div class="ui tiny green inverted button reply-button" id =' + posts[i].post.id +'>\
-                        reply\
-                    </div>'
+                    <div class="ui mini green inverted button reply-button bt-right-float" id =' + posts[i].post.id +'>reply</div>\
+                    </div><div class="ui divider"></div>'
                      + converter.makeHtml(posts[i].post.body) +
                 '</div>';
                 
@@ -151,36 +114,34 @@
             
             edit_button_string = "";
             if(user_is_author)
-                edit_button_string = '<div class="ui tiny red inverted button editbutton" id ="post-edit-button">edit</div>';
+                edit_button_string = '<div class="ui red mini button editbutton" id ="post-edit-button">edit</div>';
                 
             localtime = moment.utc(thread.post.post_time).toDate();
             
             var threadstring = '\
-                    <div class="ui stacked segment">\
-                        <div class="ui"></div>\
-                                <img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + thread.author.avatar_hash + '?s=48">'
-                                + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> | '
-                                + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | '
-                                + thread.post.view_count + '<i class="unhide icon"></i> | '
-                                + thread.post.comment_count + '<i class="comment outline icon"></i> | '
-                                + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
-                                + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
-                                <div class="ui tiny inverted green button reply-button" id = ' + thread.post.id + '>\
-                                    reply\
-                                </div>' + edit_button_string + 
-                            '<div class="ui top right blue attached label">\
-                                <a href="/post/t/' + thread.post.title + '">permanent link</a>\
-                            </div><br><br><h2>' + thread.post.title + '</h2>\
+                    <div class="ui blue raised segment">\
+                        <div class="post-title-info">\
+                            <img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + thread.author.avatar_hash + '?s=28">'
+                            + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> '
+                            + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | '
+                            + thread.post.view_count + '<i class="unhide icon"></i> | '
+                            + thread.post.comment_count + '<i class="comment outline icon"></i> | '
+                            + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
+                            + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>'
+                            + '<div class="bt-right-float">'
+                                + edit_button_string +
+                                '<div class="ui inverted green mini button reply-button" id = ' + thread.post.id + '>reply</div>\
+                            </div>\
                         </div>\
-                    <div class="ui stacked segment">\
-                            <div class="BT-post"><div>' + converter.makeHtml(thread.post.body) + '</div></div>\
-                        </div>';
-                        
-                        if(thread.child_posts.length != 0){
-                            threadstring +='<div class="ui threaded comments post-comments">';
-                            threadstring += buildComments(thread.child_posts);
-                            threadstring += '</div>';
-                        }
+                        <h2>' + thread.post.title + '</h2><div class="ui horizontal divider"><i class="large paw icon"></i></div>\
+                        <div class="BT-post">' + converter.makeHtml(thread.post.body) + '</div>\
+                    </div>';
+                    
+            if(thread.child_posts.length != 0){
+                threadstring +='<div class="ui threaded comments post-comments">';
+                threadstring += buildComments(thread.child_posts);
+                threadstring += '</div>';
+            }
             threadstring +='</div>';
             
             $("#thread").html(threadstring);

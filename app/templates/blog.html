@@ -5,18 +5,19 @@
     <div class="ui six wide column">
         {{ show_flash() }}
         {% for row in content %}
-        <div class="ui stacked segment">
+        <div class="ui raised green segment">
+            <div id="post_info_{{loop.index}}"></div>
+            <div class="ui divider"></div>
             <div class="BT-post"><a class="blog-posttitle" href="{{url_for('main.post_title', title = row.Post.title)}}">{{ row.Post.title|safe }}</a></div>
-                <!--<a href="{{url_for('main.user', name = row.User.name)}}"><img class="rounded ui image blog-title-avatar" src ="http://bear.today/avatar/{{row.User.avatar_hash}}?s=24">{{ row.User.name }}</a>-->
-                <!--{{ row.Post.view_count }} <i class="unhide icon"></i>
-                {{ row.Post.comment_count }} <i class="comment outline icon"></i>
-                {# row.Post.post_time #}-->
-                <br><div id="post_info_{{loop.index}}" class = ""></div>
-                <script>
-                    localtime = moment.utc("{{ row.Post.post_time }}").toDate();
-                    $("#post_info_{{loop.index}}").html('{{ row.Post.view_count }} <i class="unhide icon"></i>' + '{{ row.Post.comment_count }} <i class="comment outline icon"></i>' + moment(localtime).format("YYYY-MM-DD HH:mm:ss"));
-                </script>
-            </div>
+            <!--<a href="{{url_for('main.user', name = row.User.name)}}"><img class="rounded ui image blog-title-avatar" src ="http://bear.today/avatar/{{row.User.avatar_hash}}?s=24">{{ row.User.name }}</a>-->
+            <!--{{ row.Post.view_count }} <i class="unhide icon"></i>
+            {{ row.Post.comment_count }} <i class="comment outline icon"></i>
+            {# row.Post.post_time #}-->
+            <script>
+                localtime = moment.utc("{{ row.Post.post_time }}").toDate();
+                $("#post_info_{{loop.index}}").html('{{ row.Post.view_count }} <i class="blue unhide icon"></i>' + '{{ row.Post.comment_count }} <i class="red comment outline icon"></i><div class="blog-posttitle-time">' + moment(localtime).fromNow() + '</div>');
+            </script>
+        </div>
         {% else %}
         <div class="ui stacked segment">
             No post exists!

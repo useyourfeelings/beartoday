@@ -134,7 +134,7 @@ table code {
   background-color: transparent;
 }
 p {
-  margin: 1em 0em;
+  *margin: 1em 0em;
 }
 p:first-child {
   margin-top: 0em;
@@ -194,12 +194,29 @@ a.bbs-posttitle:hover {
   color: #00BA00;
 }
 
+.blog-posttitle-time{
+    float:right;
+    margin-right:10px;
+}
+
+.bt-right-float{
+    float:right;
+}
+
+.ui.divider{
+    margin:4px;
+}
+
 a.blog-posttitle {
     font-weight:bold;
     color: #333333;*#aaaa44;
     text-decoration: none;
-    font-size:26px;
-    padding:2px 0px 0px 0px;
+    font-size:22px;
+    padding:0px 0px 0px 0px;
+}
+
+.ui.segment{
+    padding:4px 0px 4px 8px;
 }
 
 a.blog-posttitle:hover {
@@ -238,9 +255,12 @@ a.blog-posttitle:hover {
     height:24px;
 }
 
-.post-comments{
-    font-size:13px;
-    *padding:2px 0px 2px 2px;
+.ui.comments{
+    font-size:20px;
+}
+
+.post-title-info{
+    font-size:22px;
 }
 
 .ui.active.right.very.wide.sidebar {
@@ -250,6 +270,15 @@ a.blog-posttitle:hover {
 .ui.very.wide.sidebar {
     width: 600px!important;
     margin-left: -600px!important;
+}
+
+.ui.threaded.comments .comment .comments{
+    padding:26px 0px 1em 1em;
+}
+
+.ui.comments{
+    max-width:none;
+    *width:none;
 }
 
 .bbstree-segment > .segment{
