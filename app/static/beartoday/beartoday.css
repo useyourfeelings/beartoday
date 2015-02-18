@@ -47,6 +47,9 @@ h3::selection {
     margin-right:0;
 }
 
+img{
+    max-width:98%;
+}
 
 body#example {
   font-family: "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Microsoft YaHei", "Ubuntu Mono", "DejaVu Sans Mono", "微软雅黑", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif/*rtl:prepend:"Droid Arabic Kufi","Droid Sans", */;
@@ -102,7 +105,7 @@ h4 + p {
   margin: 0px 0px 20px;
 }
 pre {
-  background-color: #F0F0F0;
+  *background-color: #F0F0F0;
 }
 /*rtl:ignore*/
 pre.console {
@@ -114,18 +117,18 @@ pre.console {
   direction:ltr;
 }
 code {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(80, 220, 0, 0.2);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  font-family: Courier New;
+  *display: inline-block;
+  *font-family: Courier New;
   font-size: 14px;
-  margin: 0.25em;
-  padding: 0.125em 0.5em;
+  margin: 0 0.25em 0 0.25em;
+  padding: 0 2px 0 2px;
   vertical-align: middle;
 }
 pre code {
-  border: none;
-  padding: 0px;
+  *border: none;
+  *padding: 0px;
 }
 table pre,
 table code {

@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block script %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/monokai_sublime.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'highlight/styles/googlecode.css') }}" />
 <script type="text/javascript" src="{{ url_for('static', filename = 'highlight/highlight.pack.js') }}"></script>
 {% if g.platform_setting.mode == 1 %}
 <script type="text/javascript" src="{{ url_for('static', filename='zTree_v3/js/jquery.ztree.all-3.5.js') }}"></script>
@@ -31,6 +31,8 @@
 {% endif %}
 
 <script type="text/javascript">
+
+    hljs.configure({languages:['bash', 'cmake', 'c', 'cpp', 'makefile', 'markdown', 'python', 'r', 'sql']});
 
     var can_reply = {{ can_reply }};
     var post_id = {{ post_id }};
@@ -114,7 +116,7 @@
             
             edit_button_string = "";
             if(user_is_author)
-                edit_button_string = '<div class="ui red mini button editbutton" id ="post-edit-button">edit</div>';
+                edit_button_string = '<div class="ui red inverted mini button editbutton" id ="post-edit-button">edit</div>';
                 
             localtime = moment.utc(thread.post.post_time).toDate();
             
