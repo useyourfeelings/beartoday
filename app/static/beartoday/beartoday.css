@@ -59,8 +59,8 @@ body#example {
   color: #91010;
   min-width: 320px;
   *text-shadow: 1px 1px 1px #5f5f5f;
-  background-image: url('../images/tree08.jpg');
-  background-repeat:no-repeat;
+  background-image: url('../images/background/129.png');
+  *background-repeat:no-repeat;
   background-position:0 0;
   background-attachment:fixed;
   *background-size:100% auto;
