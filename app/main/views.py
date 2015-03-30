@@ -213,7 +213,7 @@ def render_post(post):
     if current_user.get_id() == post.author_id:
         user_is_author = 1
         
-    return render_template("post.html", user_is_author = user_is_author, owner_bbs = post.owner_bbs, post_id = post.id, parent_post_id = parent_post_id, ancestor_post_id = ancestor_post_id, can_reply = can_reply)
+    return render_template("post.html", user_is_author = user_is_author, owner_bbs = post.owner_bbs, post_id = post.id, parent_post_id = parent_post_id, ancestor_post_id = ancestor_post_id, can_reply = can_reply, window_title = post.title + " - " + g.platform_setting.window_title)
 
 @main.route('/blog/<name>')
 def blog(name):
