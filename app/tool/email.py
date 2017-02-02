@@ -1,7 +1,10 @@
+from app.tool.tools import dbg
+dbg("email.py")
+
 from threading import Thread
 from flask import current_app, render_template
 from flask.ext.mail import Message
-from . import mail
+from app import mail
 
 
 def send_async_email(app, msg):
@@ -16,8 +19,8 @@ def send_email(to, subject, template, **kwargs):
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
     
-    print('xcc send_email')
-    print('%r %r' %(app.config['BT_MAIL_SENDER'], to))
+    dbg('xcc send_email')
+    dbg('%r %r' %(app.config['BT_MAIL_SENDER'], to))
     
     msg.charset = 'utf8' #xiongchen20140811
     

@@ -2,9 +2,7 @@
 
 Beartoday is a blog/bbs system powered by [**flask**](http://http://flask.pocoo.org/).
 
-##[DEMO1](http://bbs.airm2m.com)
-
-##[DEMO2](http://bear.today)
+##[DEMO](http://bear.today)
 
 #Install
 * install python3

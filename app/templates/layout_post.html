@@ -10,7 +10,7 @@
     <div class="ui green message" id="flash_massage">
         <i class="close icon"></i>
         <div class="header">check your email and confirm your account</div>
-        <a href="{{ url_for('main.user', name = current_user.name )}}">see here</a>
+        <a href="{{ url_for('site.user', name = current_user.name )}}">see here</a>
     </div>
     {% endif %}
 {%- endmacro %}
@@ -19,10 +19,10 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title>{{ window_title }}</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.10.2/semantic.min.js"></script>
+<script src="{{g.config['jquery_js_url']}}"></script>
+<script src="{{g.config['semantic_js_url']}}"></script>
+<link rel=stylesheet type=text/css class="ui" href="{{g.config['semantic_css_url']}}">
 <script src="{{ url_for('static', filename='moment/moment.min.js')}}"></script>
-<link rel=stylesheet type=text/css class="ui" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.10.2/semantic.min.css">                                                                  
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'beartoday/beartoday.css') }}" />
 
 {% block source %}
@@ -32,41 +32,43 @@
 
 </head>
 
-<body id="example">
-    <div class="ui fixed transparent main menu">
-        <a class="item"  href = "{{ url_for('main.dash') }}">
+<body id="example" style="background-image:url('{{g.config['background_image']}}')">
+    <div class="ui fixed inverted black main menu">
+        <a class="item"  href = "{{ url_for('site.dash') }}">
             <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
         </a>
         <!--
-        <a class="item"  href = "{{ url_for('main.mainbbs') }}">
+        <a class="item"  href = "{{ url_for('site.mainbbs') }}">
             <i class="chat outline icon"></i>BBS
         </a>
         -->
         {% if g.platform_setting.show_blog_link %}
-        <a class="item"  href = "{{ url_for('main.mainblog') }}">
+        <a class="item"  href = "{{ url_for('site.mainblog') }}">
             <i class=" blue browser icon"></i>BLOG
         </a>
         {% endif %}
         {% if g.platform_setting.show_about_link %}
-        <a class="item"  href = "{{ url_for('main.post_title', title = 'about') }}">
+        <a class="item"  href = "{{ url_for('site.post_title', title = 'about') }}">
             <i class="teal book icon"></i>ABOUT
         </a>
         {% endif %}
-        <a class="item"  href = "{{ url_for('main.drawings') }}">
-            <i class="blue edit icon"></i>DRAWINGS
+        <a class="item"  href = "{{ url_for('site.gallery') }}">
+            <i class="blue image icon"></i>GALLERY
         </a>
-        <a class="item"  href = "{{ url_for('main.videos') }}">
+        <a class="item"  href = "{{ url_for('site.videos') }}">
             <i class="orange desktop icon"></i>VIDEOS
         </a>
-        <a class="item"  href = "{{ url_for('main.post_title', title = 'resources') }}">
+        {#
+        <a class="item"  href = "{{ url_for('site.post_title', title = 'resources') }}">
             <i class="yellow idea icon"></i>RESOURCES
         </a>
+        #}
         <div class="ui dropdown item">
             <i class="red dashboard icon"></i>
             FUNCTIONS<i class="dropdown icon"></i>
             <div class="menu">
                 {% if current_user.is_authenticated() %}
-                <a class="item" href="{{ url_for('main.compose') }}"><i class="edit icon"></i>Write blog</a>
+                <a class="item" href="{{ url_for('site.compose') }}"><i class="edit icon"></i>Write blog</a>
                 {% endif %}
             </div>
         </div>
@@ -85,9 +87,9 @@
                 <div class="menu">
                     {% if current_user.is_authenticated() %}
                     {% if current_user.is_god() %}
-                    <a class="item" href = "{{ url_for('main.dashboard')}}">Dashboard</a>
+                    <a class="item" href = "{{ url_for('site.dashboard')}}">Dashboard</a>
                     {% endif %}
-                    <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Who am I</a>
+                    <a class="item" href = "{{ url_for('site.user', name = current_user.name )}}">Who am I</a>
                     <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                     {% else %}
                     <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
@@ -96,8 +98,11 @@
             </div>
         </div>
     </div>
-{% block body %}
-{% endblock %}
+    
+    <div class="main-content">
+    {% block body %}
+    {% endblock %}
+    </div>
 
 </body>
 <script>

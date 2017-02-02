@@ -1,8 +1,11 @@
+from app.tool.tools import dbg
+dbg('model.py')
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask.ext.login import UserMixin
-from . import db, login_manager
+from app import db, login_manager
 
 from datetime import datetime
 
@@ -41,7 +44,7 @@ class Role(db.Model):   #(Role - User) one to many
             role.name = r[1]
             role.default = r[2]
             db.session.add(role)
-            print('create_roles %r' % role)
+            dbg('create_roles %r' % role)
         db.session.commit()
 
     def __repr__(self):
@@ -230,7 +233,7 @@ class Tag(db.Model):
         self.name = name
         
 class PlatformSetting(db.Model):
-    __tablename__ = 'platformsetting'
+    __tablename__ = 'platform_setting'
 
     id = Column(Integer, primary_key=True, nullable=False, unique=True)
     

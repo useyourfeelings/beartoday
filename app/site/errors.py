@@ -2,7 +2,7 @@ from flask import render_template, request, jsonify, g
 from . import main
 
 from .. import db
-from ..models import PlatformSetting
+from app.database.model import PlatformSetting
 
 @main.app_errorhandler(403)
 def forbidden(e):

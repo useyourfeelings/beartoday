@@ -1,21 +1,28 @@
-from flask import render_template, request
+from app.tool.tools import dbg
+dbg('site.py')
+
+import os, json, re, time, sys, html
+
 from flask.ext.login import login_required
 
+import config as config
+#import app.database.model as dbmodel
+
 from .. import db
-from ..models import Role, User, Post, PlatformSetting, BBS
+from app.database.model import Role, User, Post, PlatformSetting, BBS
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError, InvalidRequestError
-from . import main
+
+# blueprint
+from flask import Blueprint
 
 from .forms import PlatformSettingForm
 
 from sqlalchemy import *#create_engine
 
-import json, re, time, sys, html
-
 from datetime import datetime
 
-from .sources import source_drawings, source_videos, source_links
+from .sources import source_videos
 
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -25,101 +32,108 @@ class ComplexEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 #main flask
-from flask import Flask, request, g, redirect, url_for, abort, \
-     render_template, flash, _app_ctx_stack
+from flask import Flask, request, g, redirect, url_for, abort, render_template, flash, _app_ctx_stack
 
 #login module
-from flask_login import (LoginManager, UserMixin, login_required, login_user,
-                             logout_user, make_secure_token, current_user)
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, make_secure_token, current_user
 
-@main.before_request
+site_blueprint = Blueprint('site', __name__)
+
+@site_blueprint.before_request
 def before_request():
     setting = db.session.query(PlatformSetting).one()
     g.platform_setting = setting
     
-@main.teardown_request
+    g.config = {}
+    g.config['jquery_js_url'] = config.jquery_js_url
+    g.config['semantic_js_url'] = config.semantic_js_url
+    g.config['semantic_css_url'] = config.semantic_css_url
+    g.config['avatar_site'] = config.avatar_site
+    g.config['background_image'] = config.background_image
+    
+@site_blueprint.teardown_request
 def teardown_request(exception):
     pass
 
-@main.route('/favicon.ico')
+@site_blueprint.route('/favicon.ico')
 def favicon():
     return redirect(url_for('static', filename = 'images/paw.ico'))
 
-@main.route('/')
+@site_blueprint.route('/')
 def dash():
-    print("/dash")
+    dbg("/dash")
     
     try:
         bbs = db.session.query(BBS).filter(BBS.id == 1).one()
     
         if g.platform_setting.mode == 0:
             user = db.session.query(User).filter(User.id == g.platform_setting.main_blog).one()
-            return redirect(url_for('main.blog', name = user.name))
+            return redirect(url_for('site.blog', name = user.name))
         else:
-            return redirect(url_for('main.bbs', name = bbs.name))
+            return redirect(url_for('site.bbs', name = bbs.name))
     
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("404.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return render_template("404.html")
 
-@main.route('/mainbbs')
+@site_blueprint.route('/mainbbs')
 def mainbbs():
-    print("/mainbbs")
+    dbg("/mainbbs")
     
     try:
         bbs = db.session.query(BBS).filter(BBS.id == 1).one()
-        return redirect(url_for('main.bbs', name = bbs.name))
+        return redirect(url_for('site.bbs', name = bbs.name))
     
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("404.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return render_template("404.html")
 
-@main.route('/mainblog')
+@site_blueprint.route('/mainblog')
 def mainblog():
-    print("/mainblog")
+    dbg("/mainblog")
     
     try:
         user = db.session.query(User).filter(User.id == g.platform_setting.main_blog).one()
-        return redirect(url_for('main.blog', name = user.name))
+        return redirect(url_for('site.blog', name = user.name))
     
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("404.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return render_template("404.html")
 
-@main.route('/about')
+@site_blueprint.route('/about')
 def about():
-    print("/about")
+    dbg("/about")
     return render_template("about.html")
 
-@main.route('/user/<name>')
+@site_blueprint.route('/user/<name>')
 def user(name):
     try:
         user = db.session.query(User).filter(User.name == name).one()
     
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("user.html", user = user)
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return "ERROR"
     
     return render_template("user.html", user = user)
 
 def build_thread(post):#build thread tree
-    print("build_thread %d" % post.id)
+    dbg("build_thread %d" % post.id)
     
     post_dict = {'id':post.id, 'parent_post_id':post.parent_post_id, 'view_count':post.view_count,
                  'post_time':post.post_time,
@@ -142,49 +156,49 @@ def build_thread(post):#build thread tree
 
     return {'post':post_dict, 'author':author_dict, 'child_posts':child_posts_list}
 
-@main.route('/getthread', methods = ['POST'])
+@site_blueprint.route('/getthread', methods = ['POST'])
 def getthread():
     post_id = int(request.form['post_id'])
-    print('getthread %d' % post_id)
+    dbg('getthread %d' % post_id)
     try:
         post = db.session.query(Post).filter(Post.id == post_id).one()
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("wrongpost.html")
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return "ERROR"
     
     thread = build_thread(post)
     
     return json.dumps(thread, cls = ComplexEncoder)
 
-@main.route('/post/t/<title>')
+@site_blueprint.route('/post/t/<title>')
 def post_title(title):
     try:
         post = db.session.query(Post).filter(Post.title == title).filter(Post.is_comment == False).one()
         return render_post(post)
 
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("wrongpost.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return "ERROR"
     
-@main.route('/post/i/<id>')
+@site_blueprint.route('/post/i/<id>')
 def post_id(id):
     try:
         post = db.session.query(Post).filter(Post.id == id).filter(Post.is_comment == False).one()
         return render_post(post)
     
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("wrongpost.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return "ERROR"
 
 def render_post(post):
@@ -215,9 +229,9 @@ def render_post(post):
         
     return render_template("post.html", user_is_author = user_is_author, owner_bbs = post.owner_bbs, post_id = post.id, parent_post_id = parent_post_id, ancestor_post_id = ancestor_post_id, can_reply = can_reply, window_title = post.title + " - " + g.platform_setting.window_title)
 
-@main.route('/blog/<name>')
+@site_blueprint.route('/blog/<name>')
 def blog(name):
-    print("blog %s" % name)
+    dbg("blog %s" % name)
     content = []
 
     try:
@@ -226,17 +240,17 @@ def blog(name):
         return render_template("blog.html", content = content)
         
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("blog.html", content = content)
     
     return "ERROR"
 
-@main.route('/compose', methods = ['POST', 'GET'])
+@site_blueprint.route('/compose', methods = ['POST', 'GET'])
 @login_required
 def compose():
     return render_template("compose.html")
 
-@main.route('/savepost', methods = ['POST'])
+@site_blueprint.route('/savepost', methods = ['POST'])
 @login_required
 def savepost():
     title = request.form['title']
@@ -257,14 +271,14 @@ def savepost():
             post.last_editing_time = datetime.utcnow()
             
             db.session.commit()
-            print(post.body)
+            dbg(post.body)
             return "OK"
             
         except Exception:
-            print("savepost edit ERROR")
+            dbg("savepost edit ERROR")
             db.session.rollback()
-            print(type(sys.exc_info()[1]))
-            print(sys.exc_info()[1])
+            dbg(type(sys.exc_info()[1]))
+            dbg(sys.exc_info()[1])
             return "ERROR"
         
         return "ERROR"
@@ -286,7 +300,7 @@ def savepost():
             comment_count = comment_count, like_count = like_count, dislike_count = dislike_count, \
             owner_blog = owner_blog, owner_bbs = owner_bbs, last_reply_time = datetime.utcnow(),\
             last_commenter = author_id)
-        #print(post.post_time)
+        #dbg(post.post_time)
         try:
             db.session.add(post)
             db.session.commit()
@@ -301,29 +315,29 @@ def savepost():
                 ancestor_post.last_commenter = author_id
             db.session.commit()
             
-            #print(post.title)
-            #print(post.author_id)
-            #print(post.id)
-            #print(post.like_count)
-            #print(post.parent_post_id)
-            #print(post.ancestor_post_id)
-            #print(post.is_comment)
-            #print(post.comment_count)
+            #dbg(post.title)
+            #dbg(post.author_id)
+            #dbg(post.id)
+            #dbg(post.like_count)
+            #dbg(post.parent_post_id)
+            #dbg(post.ancestor_post_id)
+            #dbg(post.is_comment)
+            #dbg(post.comment_count)
             return "OK"
         except InvalidRequestError:
-            print("savepost InvalidRequestError")
-            print(type(sys.exc_info()[1]))
-            print(sys.exc_info()[1])
+            dbg("savepost InvalidRequestError")
+            dbg(type(sys.exc_info()[1]))
+            dbg(sys.exc_info()[1])
             return "ERROR"
         except Exception:
-            print("savepost ERROR")
-            print(type(sys.exc_info()[1]))
-            print(sys.exc_info()[1])
+            dbg("savepost ERROR")
+            dbg(type(sys.exc_info()[1]))
+            dbg(sys.exc_info()[1])
             return "ERROR"
     
     return "ERROR"
 
-@main.route('/dashboard', methods = ['POST', 'GET'])
+@site_blueprint.route('/dashboard', methods = ['POST', 'GET'])
 @login_required
 def dashboard():
     if not current_user.is_god():
@@ -346,9 +360,9 @@ def dashboard():
             db.session.commit()
         
         except Exception:
-            print("saverightinfo ERROR")
-            print(type(sys.exc_info()[1]))
-            print(sys.exc_info()[1])
+            dbg("saverightinfo ERROR")
+            dbg(type(sys.exc_info()[1]))
+            dbg(sys.exc_info()[1])
             return "ERROR"
     
     else:
@@ -361,7 +375,7 @@ def dashboard():
             
     return render_template("dashboard.html", form = form)
 
-@main.route('/saverightinfo', methods = ['POST'])
+@site_blueprint.route('/saverightinfo', methods = ['POST'])
 @login_required
 def saverightinfo():
     try:
@@ -374,14 +388,14 @@ def saverightinfo():
         db.session.commit()
         return "OK"
     except Exception:
-        print("saverightinfo ERROR")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("saverightinfo ERROR")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         return "ERROR"
     
     return "ERROR"
 
-@main.route('/getrightinfo', methods = ['POST'])
+@site_blueprint.route('/getrightinfo', methods = ['POST'])
 def getrightinfo():
     try:
         reply = {}
@@ -391,14 +405,14 @@ def getrightinfo():
         
         return json.dumps(reply)
     except Exception:
-        print("getrightinfo ERROR")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("getrightinfo ERROR")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         return "ERROR"
     
     return "ERROR"
 
-@main.route('/getbbstree', methods = ['POST'])
+@site_blueprint.route('/getbbstree', methods = ['POST'])
 def getbbstree():
     all_bbs = db.session.query(BBS).all()
     
@@ -409,7 +423,7 @@ def getbbstree():
         
     return json.dumps(group)
 
-@main.route('/createbbs', methods = ['POST'])
+@site_blueprint.route('/createbbs', methods = ['POST'])
 @login_required
 def createbbs():
     try:
@@ -426,24 +440,24 @@ def createbbs():
     
     except IntegrityError:
         db.session.rollback()
-        print("createbbs IntegrityError")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("createbbs IntegrityError")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'BBS with the same name exists!', 'id':0}
         return json.dumps(reply)
     
     except:
         db.session.rollback()
-        print("createbbs ERROR")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("createbbs ERROR")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'ERROR', 'id':0}
         return json.dumps(reply)
     
-@main.route('/renamebbs', methods = ['POST'])
+@site_blueprint.route('/renamebbs', methods = ['POST'])
 @login_required
 def renamebbs():
-    print("/renamebbs")
+    dbg("/renamebbs")
     try:
         name = request.form["name"]
         id = int(request.form["id"])
@@ -457,31 +471,31 @@ def renamebbs():
         return json.dumps(reply)
     
     except NoResultFound:
-        print("renamebbs NoResultFound")
+        dbg("renamebbs NoResultFound")
         reply = {'result':'NoResultFound'}
     except MultipleResultsFound:
-        print("renamebbs MultipleResultsFound")
+        dbg("renamebbs MultipleResultsFound")
         reply = {'result':'MultipleResultsFound'}
     except IntegrityError:
         db.session.rollback()
-        print("renamebbs IntegrityError")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("renamebbs IntegrityError")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'IntegrityError'}
     except:
         db.session.rollback()
-        print("renamebbs except")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("renamebbs except")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'except'}
     finally:
         return json.dumps(reply)
     
     
-@main.route('/deletebbs', methods = ['POST'])
+@site_blueprint.route('/deletebbs', methods = ['POST'])
 @login_required
 def deletebbs():
-    print("deletebbs")
+    dbg("deletebbs")
     return "no"
 '''
     try:
@@ -494,33 +508,33 @@ def deletebbs():
         return json.dumps(reply)
     
     except NoResultFound:
-        print("renamebbs NoResultFound")
+        dbg("renamebbs NoResultFound")
         reply = {'result':'NoResultFound'}
     except MultipleResultsFound:
-        print("renamebbs MultipleResultsFound")
+        dbg("renamebbs MultipleResultsFound")
         reply = {'result':'MultipleResultsFound'}
     except IntegrityError:
         db.session.rollback()
-        print("renamebbs IntegrityError")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("renamebbs IntegrityError")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'IntegrityError'}
     except:
         db.session.rollback()
-        print("renamebbs except")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("renamebbs except")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         reply = {'result':'except'}
     finally:
         return json.dumps(reply)
 '''
 
 
-#return redirect(url_for('main.blog', name = user.name))
+#return redirect(url_for('site.blog', name = user.name))
 
-@main.route('/bbs/<name>')
+@site_blueprint.route('/bbs/<name>')
 def bbs(name):
-    #print("/bbs %s" % name)
+    #dbg("/bbs %s" % name)
     
     page = request.args.get('page', 1, type = int)
     
@@ -528,11 +542,11 @@ def bbs(name):
         bbs = db.session.query(BBS).filter(BBS.name == name).one()
         
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("404.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return render_template("500.html")
     
     try:
@@ -553,15 +567,15 @@ def bbs(name):
         return render_template("bbs.html", page = page, can_reply = can_reply, bbs = bbs, parent_bbs = parent_bbs, children_bbs = children_bbs)
 
     except:
-        print("bbs except 1")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("bbs except 1")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
 
     return render_template("500.html")
     
-@main.route('/getbbsposts', methods = ['POST'])
+@site_blueprint.route('/getbbsposts', methods = ['POST'])
 def getbbsposts():
-    print("/getbbsposts")
+    dbg("/getbbsposts")
     
     id = int(request.form["bbs_id"])
     page = int(request.form["page"])
@@ -570,17 +584,17 @@ def getbbsposts():
     if page < 1:
         page = 1
     
-    print('page %d page_size %d' % (page, page_size))
+    dbg('page %d page_size %d' % (page, page_size))
     
     try:
         bbs = db.session.query(BBS).filter(BBS.id == id).one()
         
     except NoResultFound:
-        print("NoResultFound")
+        dbg("NoResultFound")
         return render_template("404.html")
         
     except MultipleResultsFound:
-        print("MultipleResultsFound")
+        dbg("MultipleResultsFound")
         return "MultipleResultsFound"
         
     reply = {}
@@ -645,7 +659,7 @@ def getbbsposts():
             .filter(Post.is_comment == False)\
             .order_by(Post.last_reply_time.desc()).offset(page_size * (page - 1)).limit(page_size)
         
-        #print(query)
+        #dbg(query)
         
         content = query.all()
         
@@ -671,19 +685,24 @@ def getbbsposts():
         reply['posts'] = posts
         
     except:
-        print("bbs except 2")
-        print(type(sys.exc_info()[1]))
-        print(sys.exc_info()[1])
+        dbg("bbs except 2")
+        dbg(type(sys.exc_info()[1]))
+        dbg(sys.exc_info()[1])
         
     return json.dumps(reply, cls = ComplexEncoder)
 
-@main.route('/drawings')
-def drawings():
-    print("/drawings")
-    print(type(drawings))
-    return render_template("drawings.html", drawings = source_drawings)
+@site_blueprint.route('/gallery')
+def gallery():
+    dbg("/gallery")
+    dbg(os.getcwd())
+    all_files = os.listdir(os.getcwd() + '/app' + config.gallery_dir)
+    dbg(all_files)
+    pictures = []
+    for f in sorted(all_files, reverse = True):
+        pictures.append(config.gallery_dir + f)
+    return render_template("gallery.html", pictures = pictures)
 
-@main.route('/videos')
+@site_blueprint.route('/videos')
 def videos():
-    print("/videos")
+    dbg("/videos")
     return render_template("videos.html", videos = source_videos)

@@ -4,16 +4,16 @@
 {% endblock %}
 
 {% block body %}
-<div class="ui fixed transparent main menu">
-    <a class="item"  href = "{{ url_for('main.dash') }}">
-        <i class=" green home icon"></i>{{ g.platform_setting.page_title }}
+<div class="ui fixed main menu">
+    <a class="item"  href = "{{ url_for('site.dash') }}">
+        <i class="green home icon"></i>{{ g.platform_setting.page_title }}
     </a>
     {% if g.platform_setting.show_blog_link %}
-    <a class="item"  href = "{{ url_for('main.mainblog') }}">
-        <i class=" blue browser icon"></i>BLOG
+    <a class="item"  href = "{{ url_for('site.mainblog') }}">
+        <i class="blue browser icon"></i>BLOG
     </a>
     {% endif %}
-    <div class="ui icon item">
+    <div class="item">
         <div class="ui tiny red button" id="undo"><i class="undo icon"></i></div>
         <div class="ui tiny yellow button" id="redo"><i class="repeat icon"></i></div>
         <div class="ui tiny blue button" id="dobold"><i class="bold icon"></i></div>
@@ -59,9 +59,9 @@
             <div class="menu">
                 {% if current_user.is_authenticated() %}
                 {% if current_user.is_god() %}
-                <a class="item" href = "{{ url_for('main.dashboard')}}">Admin</a>
+                <a class="item" href = "{{ url_for('site.dashboard')}}">Admin</a>
                 {% endif %}
-                <a class="item" href = "{{ url_for('main.user', name = current_user.name )}}">Account</a>
+                <a class="item" href = "{{ url_for('site.user', name = current_user.name )}}">Account</a>
                 <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                 {% else %}
                 <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>
@@ -76,6 +76,7 @@
     </div>-->
 
     <!--<div class="ui horizontal icon divider"><i class="circular comment outline icon"></i></div>-->
+
 
 <div id = "markdown_main">
     <div id="markdown_editor"></div>
@@ -97,7 +98,7 @@
     }
     #markdown_main { 
         position: absolute;
-        top: 36px;
+        top: 52px;
         right: 0;
         bottom: 0;
         left: 0;

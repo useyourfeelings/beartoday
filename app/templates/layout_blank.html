@@ -3,14 +3,14 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title>{{ g.platform_setting.window_title }}</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.10.2/semantic.min.js"></script>
-<link rel=stylesheet type=text/css class="ui" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.10.2/semantic.min.css">                                                                  
-  
+<script src="{{g.config['jquery_js_url']}}"></script>
+<script src="{{g.config['semantic_js_url']}}"></script>
+<link rel=stylesheet type=text/css class="ui" href="{{g.config['semantic_css_url']}}">
+
 {% block source %}
 {% endblock %}
 </head>
-<body id="example">
+<body id="example" style="background-image:url('{{g.config['background_img']}}')">
 
 {% block body %}
 {% endblock %}

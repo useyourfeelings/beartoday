@@ -1,7 +1,7 @@
 {% extends "layout_post.html" %}
 
 {% block body %}
-<div class="ui grid">
+<div class="ui centered grid">
     {% if g.platform_setting.mode == 1 %}
     <div class="ui three wide column">
         <div class="ui tiny top attached header">BBS TREE</div>
@@ -16,7 +16,6 @@
         <div id = "thread"></div>
     </div>
 </div>
-
 {% include "bbs_post_editor.html" %}
 
 {% endblock %}
@@ -47,7 +46,7 @@
     var post_title = "";
     var post_body = "";
     
-    $('#markdown_main').split({orientation:'vertical', limit:200, onDragEnd:onSplitterDargEnd});
+    $('#markdown_main').split({orientation:'vertical', limit:300, onDragEnd:onSplitterDargEnd});
     $('#help').popup();
     
     function savepostover(data, status)
@@ -80,15 +79,16 @@
         var i;
         for(i = 0; i < posts.length; ++ i){
             localtime = moment.utc(posts[i].post.post_time).toDate();
+            avatar_url = "{{g.config['avatar_site']}}" + posts[i].author.avatar_hash + '?s=24'
             comments +=
             '<div class="comment post-comment">\
-                <div class="ui blue raised compact segment">\
-                    <div><a><img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + posts[i].author.avatar_hash + '?s=24">\</a>\
-                    <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> '
-                    + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | ' 
-                    + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
+                <div class="ui raised compact segment">\
+                    <div style="padding:0 0 1em 0;"><a><img class="rounded ui image bbs-title-avatar" src ="' + avatar_url + '">\</a>\
+                    <a href="/user/' + posts[i].author.name + '">' + posts[i].author.name + '</a> ['
+                    + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + '] ' 
+                    + posts[i].post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> '
                     + posts[i].post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>\
-                    <div class="ui mini green inverted button reply-button bt-right-float" id =' + posts[i].post.id +'>reply</div>\
+                    <div class="ui mini green button reply-button bt-right-float" id =' + posts[i].post.id +'>reply</div>\
                     </div><div class="ui divider"></div>'
                      + converter.makeHtml(posts[i].post.body) +
                 '</div>';
@@ -116,23 +116,25 @@
             
             edit_button_string = "";
             if(user_is_author)
-                edit_button_string = '<div class="ui red inverted mini button editbutton" id ="post-edit-button">edit</div>';
+                edit_button_string = '<div class="ui red mini button editbutton" id ="post-edit-button">edit</div>';
                 
             localtime = moment.utc(thread.post.post_time).toDate();
             
+            avatar_url = "{{g.config['avatar_site']}}" + thread.author.avatar_hash + '?s=28'
+            
             var threadstring = '\
-                    <div class="ui blue raised segment">\
+                    <div class="ui raised segment">\
                         <div class="post-title-info">\
-                            <img class="rounded ui image bbs-title-avatar" src ="http://bear.today/avatar/' + thread.author.avatar_hash + '?s=28">'
-                            + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> '
-                            + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + ' | '
-                            + thread.post.view_count + '<i class="unhide icon"></i> | '
-                            + thread.post.comment_count + '<i class="comment outline icon"></i> | '
-                            + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> | '
+                            <img class="rounded ui image bbs-title-avatar" src ="' + avatar_url + '">'
+                            + '<a href="/user/' + thread.author.name + '">' + thread.author.name + '</a> ['
+                            + moment(localtime).format("YYYY-MM-DD HH:mm:ss") + '] '
+                            + thread.post.view_count + '<i class="blue unhide icon"></i> '
+                            + thread.post.comment_count + '<i class="pink comment outline icon"></i> '
+                            + thread.post.like_count + '<a class="like"><i class="thumbs up outline icon"></i></a> '
                             + thread.post.dislike_count + '<a class="dislike"><i class="thumbs down outline icon"></i></a>'
                             + '<div class="bt-right-float">'
                                 + edit_button_string +
-                                '<div class="ui inverted green mini button reply-button" id = ' + thread.post.id + '>reply</div>\
+                                '<div class="ui green mini button reply-button" id = ' + thread.post.id + '>reply</div>\
                             </div>\
                         </div>\
                         <h2>' + thread.post.title + '</h2><div class="ui horizontal divider"><i class="large paw icon"></i></div>\
@@ -162,12 +164,14 @@
                 }
                 $('#mdeditor-mode').html('REPLY');
                 //$('#mdeditor-modal').sidebar('show');
+                $("#mdeditor-modal").modal('setting', 'closable', false);
                 $("#mdeditor-modal").modal('toggle');
                 editor_mode = MODE_REPLY;
                 parent_post_id = this.id;
             });
                 
             $("#post-edit-button").click(function(){
+                $("#mdeditor-modal").modal('setting', 'closable', false);
                 $('#mdeditor-modal').modal('show');
                 editor_mode = MODE_EDIT;
                 parent_post_id = 0;// no use

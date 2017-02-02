@@ -1,3 +1,5 @@
+*.[oa]
+*.pyc
 *~
 __pycache__/
-app/static/images/uploads/
+config/config.py
