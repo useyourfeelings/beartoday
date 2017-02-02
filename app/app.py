@@ -2,11 +2,11 @@ from app.tool.tools import dbg
 dbg("app.py")
 
 from flask import Flask
-from flask.ext.mail import Mail
+from flask_mail import Mail
 #from flask.ext.moment import Moment
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
-from flask.ext.babel import Babel
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_babel import Babel
 
 from .flasksui import *
 

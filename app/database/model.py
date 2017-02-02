@@ -4,7 +4,7 @@ dbg('model.py')
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from app import db, login_manager
 
 from datetime import datetime
@@ -252,6 +252,8 @@ class PlatformSetting(db.Model):
         self.page_title = page_title
         self.main_blog = main_blog
         self.show_blog_link = show_blog_link
+        self.right_info_title = ''
+        self.right_info = ''
         
     @staticmethod
     def create_default_setting():

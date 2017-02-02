@@ -3,7 +3,7 @@ dbg('site.py')
 
 import os, json, re, time, sys, html
 
-from flask.ext.login import login_required
+from flask_login import login_required
 
 import config as config
 #import app.database.model as dbmodel
@@ -35,7 +35,7 @@ class ComplexEncoder(json.JSONEncoder):
 from flask import Flask, request, g, redirect, url_for, abort, render_template, flash, _app_ctx_stack
 
 #login module
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, make_secure_token, current_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 site_blueprint = Blueprint('site', __name__)
 

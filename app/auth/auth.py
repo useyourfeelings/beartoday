@@ -4,7 +4,7 @@ dbg('auth.py')
 import config as config
 
 from flask import render_template, redirect, request, url_for, flash, g
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 
 from .. import db
 from app.database.model import User, PlatformSetting
@@ -31,7 +31,7 @@ def before_request():
     
 @auth_blueprint.before_app_request
 def before_request():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         pass
         #current_user.ping()
         '''if not current_user.confirmed \
