@@ -2,8 +2,7 @@ from app.tool.tools import dbg
 dbg('site.py')
 
 import os, json, re, time, sys, html
-
-from flask_login import login_required
+from datetime import datetime
 
 import config as config
 #import app.database.model as dbmodel
@@ -12,16 +11,9 @@ from .. import db
 from app.database.model import Role, User, Post, PlatformSetting, BBS
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError, InvalidRequestError
-
-# blueprint
-from flask import Blueprint
-
-from .forms import PlatformSettingForm
-
 from sqlalchemy import *#create_engine
 
-from datetime import datetime
-
+from .forms import PlatformSettingForm
 from .sources import source_videos
 
 class ComplexEncoder(json.JSONEncoder):
@@ -32,7 +24,7 @@ class ComplexEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 #main flask
-from flask import Flask, request, g, redirect, url_for, abort, render_template, flash, _app_ctx_stack
+from flask import Flask, Blueprint, request, g, redirect, url_for, abort, render_template, flash, _app_ctx_stack, make_response
 
 #login module
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
@@ -124,11 +116,11 @@ def user(name):
     
     except NoResultFound:
         dbg("NoResultFound")
-        return render_template("user.html", user = user)
+        return render_template("500.html")
         
     except MultipleResultsFound:
         dbg("MultipleResultsFound")
-        return "ERROR"
+        return render_template("500.html")
     
     return render_template("user.html", user = user)
 
@@ -211,7 +203,7 @@ def render_post(post):
 
     can_reply = 0
     
-    if current_user.is_authenticated() and current_user.confirmed:
+    if current_user.is_authenticated and current_user.confirmed:
         can_reply = 1
         
     ancestor_post_id = post.ancestor_post_id
@@ -248,6 +240,9 @@ def blog(name):
 @site_blueprint.route('/compose', methods = ['POST', 'GET'])
 @login_required
 def compose():
+    if not current_user.confirmed:
+        return redirect(url_for('site.user', name = current_user.name))
+    
     return render_template("compose.html")
 
 @site_blueprint.route('/savepost', methods = ['POST'])
@@ -561,7 +556,7 @@ def bbs(name):
         
         can_reply = 0
     
-        if current_user.is_authenticated() and current_user.confirmed:
+        if current_user.is_authenticated and current_user.confirmed:
             can_reply = 1
             
         return render_template("bbs.html", page = page, can_reply = can_reply, bbs = bbs, parent_bbs = parent_bbs, children_bbs = children_bbs)

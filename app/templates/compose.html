@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="ui fixed main menu">
+<div class="ui fixed inverted black main menu">
     <a class="item"  href = "{{ url_for('site.dash') }}">
         <i class="green home icon"></i>{{ g.platform_setting.page_title }}
     </a>
@@ -57,11 +57,11 @@
         <div class="ui dropdown item">
             <i class="user icon"></i>
             <div class="menu">
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated %}
                 {% if current_user.is_god() %}
-                <a class="item" href = "{{ url_for('site.dashboard')}}">Admin</a>
+                <a class="item" href = "{{ url_for('site.dashboard')}}">Dashboard</a>
                 {% endif %}
-                <a class="item" href = "{{ url_for('site.user', name = current_user.name )}}">Account</a>
+                <a class="item" href = "{{ url_for('site.user', name = current_user.name )}}">Who am I</a>
                 <a class="item" href = "{{ url_for('auth.logout') }}">Log out</a>
                 {% else %}
                 <a class="item" href = "{{ url_for('auth.login') }}">Log in</a>

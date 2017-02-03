@@ -3,7 +3,7 @@ dbg('auth.py')
 
 import config as config
 
-from flask import render_template, redirect, request, url_for, flash, g
+from flask import Blueprint, render_template, redirect, request, url_for, flash, g
 from flask_login import login_user, logout_user, login_required, current_user
 
 from .. import db
@@ -15,7 +15,6 @@ from datetime import datetime
 
 import hashlib
 
-from flask import Blueprint
 auth_blueprint = Blueprint('auth', __name__)
 
 @auth_blueprint.before_request
@@ -90,15 +89,17 @@ def register():
                     password=form.password.data,
                     registration_time = datetime.utcnow(),
                     last_seen_time = datetime.utcnow())
-        user.confirmed = True;
+        user.confirmed = False;
         user.avatar_hash = hashlib.md5(form.email.data.encode('utf-8')).hexdigest()
         db.session.add(user)
         db.session.commit()
-        #token = user.generate_confirmation_token()
-        #send_email(user.email, 'Confirm Your Account',
-        #           'auth/email/confirm', user=user, token=token)
-        #flash('A confirmation email has been sent to you by email.')
-        flash('log in please!')
+        
+        token = user.generate_confirmation_token()
+        send_email(user.email, 'Confirm Your Account',
+                   'auth/email/confirm', user=user, token=token)
+        flash('A confirmation email has been sent to you by email.')
+        
+        #flash('log in please!')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
