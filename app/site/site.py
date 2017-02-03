@@ -1,4 +1,4 @@
-from app.tool.tools import dbg
+from app.tool.tools import dbg, print_exception_info
 dbg('site.py')
 
 import os, json, re, time, sys, html
@@ -200,6 +200,7 @@ def render_post(post):
     
     except:
         db.session.rollback()
+        print_exception_info()
 
     can_reply = 0
     
@@ -266,14 +267,12 @@ def savepost():
             post.last_editing_time = datetime.utcnow()
             
             db.session.commit()
-            dbg(post.body)
             return "OK"
             
         except Exception:
             dbg("savepost edit ERROR")
             db.session.rollback()
-            dbg(type(sys.exc_info()[1]))
-            dbg(sys.exc_info()[1])
+            print_exception_info()
             return "ERROR"
         
         return "ERROR"
@@ -321,13 +320,11 @@ def savepost():
             return "OK"
         except InvalidRequestError:
             dbg("savepost InvalidRequestError")
-            dbg(type(sys.exc_info()[1]))
-            dbg(sys.exc_info()[1])
+            print_exception_info()
             return "ERROR"
         except Exception:
             dbg("savepost ERROR")
-            dbg(type(sys.exc_info()[1]))
-            dbg(sys.exc_info()[1])
+            print_exception_info()
             return "ERROR"
     
     return "ERROR"
@@ -356,8 +353,7 @@ def dashboard():
         
         except Exception:
             dbg("saverightinfo ERROR")
-            dbg(type(sys.exc_info()[1]))
-            dbg(sys.exc_info()[1])
+            print_exception_info()
             return "ERROR"
     
     else:
@@ -384,8 +380,7 @@ def saverightinfo():
         return "OK"
     except Exception:
         dbg("saverightinfo ERROR")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         return "ERROR"
     
     return "ERROR"
@@ -401,8 +396,7 @@ def getrightinfo():
         return json.dumps(reply)
     except Exception:
         dbg("getrightinfo ERROR")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         return "ERROR"
     
     return "ERROR"
@@ -436,16 +430,14 @@ def createbbs():
     except IntegrityError:
         db.session.rollback()
         dbg("createbbs IntegrityError")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         reply = {'result':'BBS with the same name exists!', 'id':0}
         return json.dumps(reply)
     
     except:
         db.session.rollback()
         dbg("createbbs ERROR")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         reply = {'result':'ERROR', 'id':0}
         return json.dumps(reply)
     
@@ -474,14 +466,12 @@ def renamebbs():
     except IntegrityError:
         db.session.rollback()
         dbg("renamebbs IntegrityError")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         reply = {'result':'IntegrityError'}
     except:
         db.session.rollback()
         dbg("renamebbs except")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         reply = {'result':'except'}
     finally:
         return json.dumps(reply)
@@ -563,8 +553,7 @@ def bbs(name):
 
     except:
         dbg("bbs except 1")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
 
     return render_template("500.html")
     
@@ -681,8 +670,7 @@ def getbbsposts():
         
     except:
         dbg("bbs except 2")
-        dbg(type(sys.exc_info()[1]))
-        dbg(sys.exc_info()[1])
+        print_exception_info()
         
     return json.dumps(reply, cls = ComplexEncoder)
 
